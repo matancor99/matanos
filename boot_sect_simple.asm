@@ -1,47 +1,42 @@
-[org 0x7c00]
-mov ah, 0x0e
+mov ah, 0x0e ; tty mode
 
-; attempt 1
-; Will fail again regardless of 'org' because we are still addressing the pointer
-; and not the data it points to
-mov al, "1"
-int 0x10
-mov al, the_secret
-int 0x10
+mov bp, 0x8000 ; this is an address far away from 0x7c00 so that we don't get overwritten
+mov sp, bp ; if the stack is empty then sp points to bp
 
-; attempt 2
-; Having solved the memory offset problem with 'org', this is now the correct answer
-mov al, "2"
-int 0x10
-mov al, [the_secret]
+push 'A'
+push 'B'
+push 'C'
+
+; to show how the stack grows downwards
+mov al, [0x7ffe] ; 0x8000 - 2
 int 0x10
 
-; attempt 3
-; As you expected, we are adding 0x7c00 twice, so this is not going to work
-mov al, "3"
-int 0x10
-mov bx, the_secret
-add bx, 0x7c00
-mov al, [bx]
-int 0x10
-
-; attempt 4
-; This still works because there are no memory references to pointers, so
-; the 'org' mode never applies. Directly addressing memory by counting bytes
-; is always going to work, but it's inconvenient
-mov al, "4"
-int 0x10
-mov al, [0x7c2d]
+; however, don't try to access [0x8000] now, because it won't work
+; you can only access the stack top so, at this point, only 0x7ffe (look above)
+mov al, [0x8000]
 int 0x10
 
 
-jmp $ ; infinite loop
+; recover our characters using the standard procedure: 'pop'
+; We can only pop full words so we need an auxiliary register to manipulate
+; the lower byte
+pop bx
+mov al, bl
+int 0x10 ; prints C
 
-the_secret:
-    ; ASCII code 0x58 ('X') is stored just before the zero-padding.
-    ; On this code that is at byte 0x2d (check it out using 'xxd file.bin')
-    db "X"
+pop bx
+mov al, bl
+int 0x10 ; prints B
 
-; zero padding and magic bios number
+pop bx
+mov al, bl
+int 0x10 ; prints A
+
+; data that has been pop'd from the stack is garbage now
+mov al, [0x8000]
+int 0x10
+
+
+jmp $
 times 510-($-$$) db 0
 dw 0xaa55
