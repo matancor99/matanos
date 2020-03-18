@@ -4,3 +4,4 @@ CMakeLists.txt
 *.bin
 *.obj
 *.o
+*.elf
