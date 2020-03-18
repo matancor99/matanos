@@ -2,7 +2,12 @@
 void dummy_test_entrypoint() {
 }
 
-void main() {
+void main(){
     char* video_memory = (char*) 0xb8000;
     *video_memory = 'X';
 }
+
+void _start() {
+    main();
+}
+
