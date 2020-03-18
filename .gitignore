@@ -3,3 +3,4 @@ CMakeLists.txt
 .idea/
 *.bin
 *.obj
+*.o
