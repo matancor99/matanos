@@ -8,7 +8,8 @@ void main() {
     /* Test the interrupts */
     __asm__ __volatile__("int $2");
     __asm__ __volatile__("int $3");
-    //int x = 1/0;
+    int x = 1/0;
+    kprint("Finished to run");
 }
 
 void _start() {

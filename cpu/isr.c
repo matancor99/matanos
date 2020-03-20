@@ -89,4 +89,7 @@ void isr_handler(registers_t r) {
     kprint("\n");
     kprint(exception_messages[r.int_no]);
     kprint("\n");
+    if(r.int_no == 0) {
+        r.eip += 2;
+    }
 }
