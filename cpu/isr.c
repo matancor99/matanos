@@ -9,7 +9,7 @@ void isr_install() {
     set_idt_gate(0, (unsigned int)isr0);
     set_idt_gate(1, (unsigned int)isr1);
     set_idt_gate(2, (unsigned int)isr2);
-    set_idt_gate(3, (unsigned int)isr3);
+    set_idt_gate(3, (unsigned int)isr3_handler);
     set_idt_gate(4, (unsigned int)isr4);
     set_idt_gate(5, (unsigned int)isr5);
     set_idt_gate(6, (unsigned int)isr6);
@@ -92,4 +92,10 @@ void isr_handler(registers_t r) {
     if(r.int_no == 0) {
         r.eip += 2;
     }
+}
+
+
+__interrupt void isr3_handler(struct interrupt_frame *ir_frame)
+{
+    kprint("received interrupt 3\n");
 }

@@ -43,6 +43,19 @@ typedef struct {
     unsigned int eip, cs, eflags, useresp, ss; /* Pushed by the processor automatically */
 } registers_t;
 
+
+#define __interrupt __attribute__((interrupt))
+#define __packed __attribute__((packed))
+
+
+__packed struct interrupt_frame {
+    unsigned int eip;
+    unsigned int cs;
+    unsigned int eflags;
+};
+
+__interrupt void isr3_handler(struct interrupt_frame *ir_frame);
+
 void isr_install();
 void isr_handler(registers_t r);
 

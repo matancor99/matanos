@@ -4,10 +4,10 @@ HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
 OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
 # Change this if your cross-compiler is somewhere else
-CC = gcc
+CC = gcc-7
 GDB = gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g
+CFLAGS = -g -mgeneral-regs-only -mno-red-zone
 
 all: run
 
