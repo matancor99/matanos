@@ -1,15 +1,16 @@
-#include "../drivers/screen.h"
-#include "util.h"
 #include "../cpu/isr.h"
-#include "../cpu/idt.h"
+#include "../cpu/timer.h"
+#include "../drivers/keyboard.h"
+
 
 void main() {
     isr_install();
-    /* Test the interrupts */
-    __asm__ __volatile__("int $2");
-    __asm__ __volatile__("int $3");
-    int x = 1/0;
-    kprint("Finished to run");
+
+    asm volatile("sti");
+    init_timer(50);
+    /* Comment out the timer IRQ handler to read
+     * the keyboard IRQs easier */
+    init_keyboard();
 }
 
 void _start() {
