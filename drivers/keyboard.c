@@ -146,6 +146,11 @@ void init_A20(void) {
 
 }
 
+void reboot(void) {
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xFE);
+}
+
 void init_keyboard() {
     wait_keyboard();
     port_byte_out(KEYBOARD_CONTROL_REGISTER, TEST_COMMAND);

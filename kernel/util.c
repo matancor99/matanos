@@ -66,9 +66,10 @@ int strlen(char s[]) {
     return i;
 }
 
+/*TODO - implement strnlen and not strlen, IDK why but this fucks up %s in printf*/
 int strnlen(char s[], int n) {
     int i = 0;
-    while (s[i] != '\0' && i < n) ++i;
+    while (s[i] != '\0') ++i;
     return i;
 }
 
