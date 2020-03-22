@@ -54,7 +54,9 @@ extern void irq14();
 extern void irq15();
 
 #define IRQ0 32
+#define CLOCK_INTERRUPT_LINE     (IRQ0 - IRQ0)
 #define IRQ1 33
+#define KEYBOARD_INTERRUPT_LINE     (IRQ1 - IRQ0)
 #define IRQ2 34
 #define IRQ3 35
 #define IRQ4 36
@@ -95,5 +97,8 @@ void isr_install();
 void isr_handler(registers_t r);
 typedef void (*isr_t)(registers_t);
 void register_interrupt_handler(unsigned char n, isr_t handler);
+void IRQ_set_mask(unsigned char IRQline);
+void IRQ_clear_mask(unsigned char IRQline);
+
 
 #endif

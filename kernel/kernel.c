@@ -4,12 +4,14 @@
 
 
 void main() {
-    isr_install();
 
-    asm volatile("sti");
+    //Initializing all the processor interrupt related structures
+    isr_install();
+    IRQ_set_mask(CLOCK_INTERRUPT_LINE);
+    IRQ_set_mask(KEYBOARD_INTERRUPT_LINE);
+    // Timer interrupt at 50HZ
     init_timer(50);
-    /* Comment out the timer IRQ handler to read
-     * the keyboard IRQs easier */
+    // Keyboard interrupt
     init_keyboard();
 }
 
