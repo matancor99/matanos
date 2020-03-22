@@ -49,9 +49,6 @@ void main() {
     // Keyboard interrupt
     init_keyboard();
 
-    int x  = 3;
-    printf("Im the king %d", x);
-
 }
 
 void _start() {

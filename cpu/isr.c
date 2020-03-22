@@ -102,7 +102,7 @@ void IRQ_clear_mask(unsigned char IRQline) {
 }
 
 void isr_install() {
-    asm volatile("cli");
+    disable_int();
 
     set_idt_gate(0, (unsigned int)isr0);
     set_idt_gate(1, (unsigned int)isr1);
@@ -161,7 +161,7 @@ void isr_install() {
     set_idt(); // Load with ASM
 
 
-    asm volatile("sti");
+    enable_int();
 }
 
 /* To print the message which defines every exception */

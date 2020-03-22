@@ -80,6 +80,13 @@ static inline void io_wait(void)
     /* %%al instead of %0 makes no difference.  TODO: does the register need to be zeroed? */
 }
 
+static inline void disable_int(void) {
+    asm volatile("cli");
+}
+static inline void enable_int(void) {
+    asm volatile("sti");
+}
+
 /* Struct which aggregates many registers */
 typedef struct {
     unsigned int ds; /* Data segment selector */
