@@ -7,7 +7,7 @@ extern int is_A20_on();
 
 void A20_sanity_checks(){
     // Handle A20
-
+    init_A20();
     unsigned char * addr = 0x011111;
     unsigned char * addr2 = 0x111111;
     *addr = 0x1;
@@ -47,6 +47,8 @@ void main() {
     init_timer(50);
     // Keyboard interrupt
     init_keyboard();
+
+
 }
 
 void _start() {

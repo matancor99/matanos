@@ -59,6 +59,33 @@ static void wait_keyboard(void) {
     }
 }
 
+
+void init_A20(void) {
+
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xAD);
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xD0);
+    io_wait();
+
+
+    unsigned char d = port_byte_in(KEYBOARD_DATA_REGISTER);
+    char ad[8];
+    hex_to_ascii(d, ad);
+    kprint("output port status before: ");
+    kprint(ad);
+    kprint("\n");
+
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xD1);
+    wait_keyboard();
+    port_byte_out(KEYBOARD_DATA_REGISTER, d | 2);
+
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xAE);
+
+}
+
 void init_keyboard() {
     wait_keyboard();
     port_byte_out(KEYBOARD_CONTROL_REGISTER, TEST_COMMAND);
