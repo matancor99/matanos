@@ -69,7 +69,7 @@ void init_keyboard() {
     }
 
     register_interrupt_handler(IRQ1, keyboard_callback);
-
+    kprint("\n> ");
 }
 
 
