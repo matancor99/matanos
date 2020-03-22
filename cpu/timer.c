@@ -4,6 +4,9 @@
 #include "../drivers/ports.h"
 #include "isr.h"
 
+#define TIMER_COMMAND_PORT 0x43
+#define TIMER_DATA_PORT 0x40
+#define SET_REPEAT_MODE 0x36
 unsigned int tick = 0;
 
 static void timer_callback(registers_t regs) {
@@ -25,8 +28,8 @@ void init_timer(unsigned int freq) {
     unsigned char low  = (unsigned char)(divisor & 0xFF);
     unsigned char high = (unsigned char)( (divisor >> 8) & 0xFF);
     /* Send the command */
-    port_byte_out(0x43, 0x36); /* Command port */
-    port_byte_out(0x40, low);
-    port_byte_out(0x40, high);
+    port_byte_out(TIMER_COMMAND_PORT, SET_REPEAT_MODE); /* Command port */
+    port_byte_out(TIMER_DATA_PORT, low);
+    port_byte_out(TIMER_DATA_PORT, high);
 }
 

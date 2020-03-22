@@ -2,24 +2,13 @@
 #include "ports.h"
 #include "../cpu/isr.h"
 #include "screen.h"
+#include "../kernel/util.h"
 
-static void keyboard_callback(registers_t regs) {
-    /* The PIC leaves us the scancode in port 0x60 */
-    unsigned char scancode = port_byte_in(0x60);
-    char *sc_ascii;
-    int_to_ascii(scancode, sc_ascii);
-    kprint("Keyboard scancode: ");
-    kprint(sc_ascii);
-    kprint(", ");
-    print_letter(scancode);
-    kprint("\n");
-}
+#define KEYBOARD_DATA_REGISTER 0x60
+#define KEYBOARD_CONTROL_REGISTER 0x64
+#define TEST_COMMAND 0xAA
 
-void init_keyboard() {
-   register_interrupt_handler(IRQ1, keyboard_callback); 
-}
-
-void print_letter(unsigned char scancode) {
+static void print_letter(unsigned char scancode) {
     switch (scancode) {
         case 0x0:
             kprint("ERROR");
@@ -99,24 +88,24 @@ void print_letter(unsigned char scancode) {
         case 0x19:
             kprint("P");
             break;
-		case 0x1A:
-			kprint("[");
-			break;
-		case 0x1B:
-			kprint("]");
-			break;
-		case 0x1C:
-			kprint("ENTER");
-			break;
-		case 0x1D:
-			kprint("LCtrl");
-			break;
-		case 0x1E:
-			kprint("A");
-			break;
-		case 0x1F:
-			kprint("S");
-			break;
+        case 0x1A:
+            kprint("[");
+            break;
+        case 0x1B:
+            kprint("]");
+            break;
+        case 0x1C:
+            kprint("ENTER");
+            break;
+        case 0x1D:
+            kprint("LCtrl");
+            break;
+        case 0x1E:
+            kprint("A");
+            break;
+        case 0x1F:
+            kprint("S");
+            break;
         case 0x20:
             kprint("D");
             break;
@@ -147,24 +136,24 @@ void print_letter(unsigned char scancode) {
         case 0x29:
             kprint("`");
             break;
-		case 0x2A:
-			kprint("LShift");
-			break;
-		case 0x2B:
-			kprint("\\");
-			break;
-		case 0x2C:
-			kprint("Z");
-			break;
-		case 0x2D:
-			kprint("X");
-			break;
-		case 0x2E:
-			kprint("C");
-			break;
-		case 0x2F:
-			kprint("V");
-			break;
+        case 0x2A:
+            kprint("LShift");
+            break;
+        case 0x2B:
+            kprint("\\");
+            break;
+        case 0x2C:
+            kprint("Z");
+            break;
+        case 0x2D:
+            kprint("X");
+            break;
+        case 0x2E:
+            kprint("C");
+            break;
+        case 0x2F:
+            kprint("V");
+            break;
         case 0x30:
             kprint("B");
             break;
@@ -196,7 +185,7 @@ void print_letter(unsigned char scancode) {
             kprint("Spc");
             break;
         default:
-            /* 'keuyp' event corresponds to the 'keydown' + 0x80 
+            /* 'keuyp' event corresponds to the 'keydown' + 0x80
              * it may still be a scancode we haven't implemented yet, or
              * maybe a control/escape sequence */
             if (scancode <= 0x7f) {
@@ -208,4 +197,42 @@ void print_letter(unsigned char scancode) {
             break;
     }
 }
+
+static void keyboard_callback(registers_t regs) {
+    /* The PIC leaves us the scancode in port 0x60 */
+    unsigned char scancode = port_byte_in(KEYBOARD_DATA_REGISTER);
+    char *sc_ascii;
+    int_to_ascii(scancode, sc_ascii);
+    kprint("Keyboard scancode: ");
+    kprint(sc_ascii);
+    kprint(", ");
+    print_letter(scancode);
+    kprint("\n");
+}
+
+static void wait_keyboard(void) {
+    unsigned char c = port_byte_in(KEYBOARD_CONTROL_REGISTER);
+    while (c & 0x2) {
+        kprint("Keyboard not ready\n");
+        char ac[4];
+        int_to_ascii(c, ac);
+        kprint("control status: ");
+        kprint(ac);
+    }
+}
+
+void init_keyboard() {
+    wait_keyboard();
+    port_byte_out(KEYBOARD_CONTROL_REGISTER, TEST_COMMAND);
+    io_wait();
+    unsigned char d = port_byte_in(KEYBOARD_DATA_REGISTER);
+    if (d == 0x55) {
+        kprint("Test Passed\n");
+    }
+
+    register_interrupt_handler(IRQ1, keyboard_callback);
+
+}
+
+
 
