@@ -2,6 +2,7 @@
 #include "../cpu/timer.h"
 #include "../drivers/keyboard.h"
 #include "../drivers/screen.h"
+#include "printf.h"
 
 extern int is_A20_on();
 
@@ -48,6 +49,8 @@ void main() {
     // Keyboard interrupt
     init_keyboard();
 
+    int x  = 3;
+    printf("Im the king %d", x);
 
 }
 

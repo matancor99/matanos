@@ -66,6 +66,11 @@ int strlen(char s[]) {
     return i;
 }
 
+int strnlen(char s[], int n) {
+    int i = 0;
+    while (s[i] != '\0' && i < n) ++i;
+    return i;
+}
 
 void append(char s[], char n) {
     int len = strlen(s);

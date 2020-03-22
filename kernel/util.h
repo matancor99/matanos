@@ -3,6 +3,7 @@
 
 #define low_16(address) (unsigned short)((address) & 0xFFFF)
 #define high_16(address) (unsigned short)(((address) >> 16) & 0xFFFF)
+#define NULL   ((void*)0)
 
 void memory_copy(char *source, char *dest, int nbytes);
 void memory_set(unsigned char *dest, unsigned char val, unsigned long len);
@@ -10,6 +11,7 @@ void int_to_ascii(int n, char str[]);
 void hex_to_ascii(int n, char str[]);
 void reverse(char s[]);
 int strlen(char s[]);
+int strnlen(char s[], int n);
 void backspace(char s[]);
 void append(char s[], char n);
 int strcmp(char s1[], char s2[]);
