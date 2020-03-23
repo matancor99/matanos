@@ -30,7 +30,7 @@ void A20_sanity_checks(){
 }
 
 void user_input(char *input) {
-    if (strcmp(input, "end") == 0) {
+    if (strcmp(input, "halt") == 0) {
         printf("Stopping the CPU. Bye!\n");
         asm volatile("hlt");
     }
@@ -40,7 +40,22 @@ void user_input(char *input) {
     else if(strcmp(input, "reboot") == 0) {
         reboot();
     }
-    printf("You said: %s \n>", input);
+    else if(strcmp(input, "cpuinfo") == 0) {
+        unsigned int eax, edx;
+        cpuid(1, &eax, &edx);
+        printf("Cpuid is : eax %x  edx %x\n", eax ,edx);
+        //apic:
+        printf("apic supported %d\n", (edx & CPUID_FEAT_EDX_APIC) > 0);
+        //MSR
+        printf("msr supported %d\n", (edx & CPUID_FLAG_MSR ) > 0);
+        if(edx & CPUID_FLAG_MSR) {
+            cpuGetMSR(0x1B, &eax, &edx);
+            printf("APIC BASE is 0x%8x\n", eax & 0xfffff000);
+        }
+    }
+    else {
+        printf("You said: %s \n>", input);
+    }
 }
 
 void main() {

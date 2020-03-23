@@ -1,6 +1,13 @@
 #ifndef ISR_H
 #define ISR_H
 
+#include <stdint.h>
+
+#define CPUID_FEAT_EDX_APIC         (1 << 9)
+#define CPUID_FLAG_MSR         (1 << 5)
+
+
+
 /* ISRs reserved for CPU exceptions */
 extern void isr0();
 extern void isr1();
@@ -85,6 +92,24 @@ static inline void disable_int(void) {
 }
 static inline void enable_int(void) {
     asm volatile("sti");
+}
+
+static void cpuGetMSR(uint32_t msr, uint32_t *lo, uint32_t *hi)
+{
+    asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
+}
+
+static void cpuSetMSR(uint32_t msr, uint32_t lo, uint32_t hi)
+{
+    asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
+}
+
+/** issue a single request to CPUID. Fits 'intel features', for instance
+ *  note that even if only "eax" and "edx" are of interest, other registers
+ *  will be modified by the operation, so we need to tell the compiler about it.
+ */
+static inline void cpuid(int code, uint32_t *a, uint32_t *d) {
+    asm volatile("cpuid":"=a"(*a),"=d"(*d):"a"(code):"ecx","ebx");
 }
 
 /* Struct which aggregates many registers */

@@ -211,6 +211,7 @@ void isr_handler(registers_t r) {
     kprint("\n");
     kprint(exception_messages[r.int_no]);
     kprint("\n");
+    //Return to the code after having a divition by zero exception
     if(r.int_no == 0) {
         r.eip += 2;
     }
