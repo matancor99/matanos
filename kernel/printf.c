@@ -14,6 +14,7 @@
  */
 
 #include "util.h"
+#include "../drivers/screen.h"
 #include <stdarg.h>
 
 static int isdigit (char c) {

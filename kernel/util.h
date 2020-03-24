@@ -5,8 +5,13 @@
 #define high_16(address) (unsigned short)(((address) >> 16) & 0xFFFF)
 #define NULL   ((void*)0)
 
-void memory_copy(char *source, char *dest, int nbytes);
-void memory_set(unsigned char *dest, unsigned char val, unsigned long len);
+#include "printf.h"
+
+void panic(const char *message, const char *file, int line);
+#define PANIC(msg) panic(msg, __FILE__, __LINE__);
+
+void memcpy(char *source, char *dest, int nbytes);
+void memset(unsigned char *dest, unsigned char val, unsigned long len);
 void int_to_ascii(int n, char str[]);
 void hex_to_ascii(int n, char str[]);
 void reverse(char s[]);

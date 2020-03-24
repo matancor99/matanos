@@ -1,5 +1,6 @@
 #include "../cpu/isr.h"
 #include "../cpu/timer.h"
+#include "../cpu/paging.h"
 #include "../drivers/keyboard.h"
 #include "../drivers/screen.h"
 #include "../drivers/ports.h"
@@ -68,6 +69,11 @@ void main() {
     init_timer(50);
     // Keyboard interrupt
     init_keyboard();
+
+//    initialise_paging();
+//    printf("Successful page table init\n");
+//    int *ptr = (int*)0xA0000000;
+//    int do_page_fault = *ptr;
 
 }
 

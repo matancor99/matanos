@@ -1,13 +1,13 @@
 #include "util.h"
 
-void memory_copy(char *source, char *dest, int nbytes) {
+void memcpy(char *source, char *dest, int nbytes) {
     int i;
     for (i = 0; i < nbytes; i++) {
         *(dest + i) = *(source + i);
     }
 }
 
-void memory_set(unsigned char *dest, unsigned char val, unsigned long len) {
+void memset(unsigned char *dest, unsigned char val, unsigned long len) {
     unsigned char *temp = (unsigned char *)dest;
     for ( ; len != 0; len--) *temp++ = val;
 }
@@ -93,4 +93,14 @@ int strcmp(char s1[], char s2[]) {
         if (s1[i] == '\0') return 0;
     }
     return s1[i] - s2[i];
+}
+
+void panic(const char *message, const char *file, int line)
+{
+    // We encountered a massive problem and have to stop.
+    asm volatile("cli"); // Disable interrupts.
+
+    printf("PANIC(%s) at %s : %s\n", message, file, line );
+    // Halt by going into an infinite loop.
+    for(;;);
 }

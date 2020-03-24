@@ -215,6 +215,11 @@ void isr_handler(registers_t r) {
     if(r.int_no == 0) {
         r.eip += 2;
     }
+
+    if (interrupt_handlers[r.int_no] != 0) {
+        isr_t handler = interrupt_handlers[r.int_no];
+        handler(r);
+    }
 }
 
 
