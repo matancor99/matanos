@@ -9,7 +9,7 @@
 //extern uint32_t end;
 //uint32_t placement_address = (uint32_t)&end;
 
-uint32_t placement_address = (uint32_t)0x10000;
+uint32_t placement_address = (uint32_t)0x100000;
 
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
 {

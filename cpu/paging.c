@@ -198,8 +198,7 @@ void page_fault(registers_t regs)
     if (rw) {printf("read-only ");}
     if (us) {printf("user-mode ");}
     if (reserved) {printf("reserved ");}
-    printf(") at 0x");
-    printf(faulting_address);
+    printf(") at 0x%08x", faulting_address);
     printf("\n");
     PANIC("Page fault");
 }

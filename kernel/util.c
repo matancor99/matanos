@@ -100,7 +100,7 @@ void panic(const char *message, const char *file, int line)
     // We encountered a massive problem and have to stop.
     asm volatile("cli"); // Disable interrupts.
 
-    printf("PANIC(%s) at %s : %s\n", message, file, line );
+    printf("PANIC(%s) at %s : %d\n", message, file, line );
     // Halt by going into an infinite loop.
     for(;;);
 }
