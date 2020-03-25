@@ -1,5 +1,6 @@
 ; receiving the data in 'dx'
 ; For the examples we'll assume that we're called with dx=0x1234
+[bits 32]
 print_hex:
     pusha
 

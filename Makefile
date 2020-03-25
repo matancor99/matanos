@@ -7,21 +7,27 @@ OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 CC = gcc-7
 GDB = gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g -mgeneral-regs-only -mno-red-zone
+CFLAGS = -g -mgeneral-regs-only -mno-red-zone -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables
 
 all: run
 
 # First rule is run by default
 os-image.bin: boot/bootsect.bin kernel.bin
-	cat $^ > os-image.bin
+	cat kernel.bin > os-image.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
-kernel.bin: boot/kernel_entry.o ${OBJ}
+#kernel.bin: boot/bootsect.o boot/kernel_entry.o  ${OBJ}
+#	ld -o $@ -Tlink.ld $^ -m elf_i386
+#	objcopy -O binary --only-section=.text --only-section=.data --only-section=.bss kernel.bin text.bin
+#	objcopy -O binary --only-section=.boot kernel.bin boot.bin
+#	cat boot.bin text.bin > os-image.bin
+
+kernel.bin: boot/bootsect.o boot/kernel_entry.o  ${OBJ}
 	ld -o $@ -Tlink.ld $^ --oformat binary -m elf_i386
 
 # Used for debugging purposes
-kernel.elf: boot/kernel_entry.o ${OBJ}
+kernel.elf: boot/kernel_entry.o boot/bootsect.o ${OBJ}
 	ld -o $@ -Tlink.ld $^ -m elf_i386
 
 run: os-image.bin

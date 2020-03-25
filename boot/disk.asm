@@ -1,4 +1,5 @@
 ; load 'dh' sectors from drive 'dl' into ES:BX
+[bits 16]
 disk_load:
     pusha
     ; reading from disk requires setting specific values in all registers

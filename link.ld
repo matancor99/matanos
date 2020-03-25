@@ -6,7 +6,12 @@
 ENTRY(_start)
 SECTIONS
 {
-    .text 0x1000 :
+    .boot 0x7c00 : AT(0x7c00)
+    {
+       *(.boot_text)
+    }
+
+    .text 0xa000 : AT ( ADDR (.boot) + SIZEOF (.boot) )
     {
         code = .; _code = .; __code = .;
         *(.text)
@@ -27,6 +32,6 @@ SECTIONS
         *(.bss)
         . = ALIGN(4096);
     }
-
+    . = . + 0x1000; /* 4kB of stack memory */
     end = .; _end = .; __end = .;
 }
