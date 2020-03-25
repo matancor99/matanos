@@ -1,7 +1,4 @@
-/* Link.ld -- Linker script for the kernel - ensure everything goes in the */
-/*            Correct place.  */
-/*            Original file taken from Bran's Kernel Development */
-/*            tutorials: http://www.osdever.net/bkerndev/index.php. */
+extra_sector_num = 12;
 
 ENTRY(_start)
 STARTUP(boot/kernel_entry.o)
@@ -35,5 +32,5 @@ SECTIONS
         . = ALIGN(4096);
     }
     end = .; _end = .; __end = .;
-    sector_num = (end - _code) / 512;
+    sector_num = (end - _code) / 512 + 1 + extra_sector_num;
 }

@@ -13,7 +13,7 @@ all: clean run
 
 # First rule is run by default
 os-image.bin: kernel.bin
-	cat kernel.bin > os-image.bin
+	cat kernel.bin sym.bin str.bin > os-image.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
@@ -25,6 +25,8 @@ os-image.bin: kernel.bin
 
 kernel.bin:  ${OBJ}
 	ld -o $@ -Tlink.ld $^ --oformat binary -m elf_i386
+	ld -o kernel.elf -Tlink.ld $^ -m elf_i386
+	./create_symtable.sh
 
 # Used for debugging purposes
 kernel.elf: ${OBJ}
@@ -48,5 +50,5 @@ debug: os-image.bin kernel.elf
 
 
 clean:
-	rm -rf *.bin *.dis *.o os-image.bin *.elf
+	rm -rf *.bin *.dis *.o os-image.bin str.bin sym.bin *.elf
 	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o
