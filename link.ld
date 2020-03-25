@@ -7,12 +7,13 @@ ENTRY(_start)
 STARTUP(boot/kernel_entry.o)
 SECTIONS
 {
-    .boot 0x7c00 :         /*for the boot section the lma = vma*/
+    .boot 0x7c00 :         /*for the boot section the lma = vma - both will start the binary*/
     {
        *(.boot_text)
     }
 
-    .text 0x8000 : AT ( ADDR (.boot) + SIZEOF (.boot) )   /* leave a place for a small stack at 0x8000 - 0x7e00*/
+    .text 0x8000 : AT ( ADDR (.boot) + SIZEOF (.boot) )   /* leave a place for a small stack at 0x8000 - 0x7e00 -
+    the text case things are a little different, it is places excetly after the boot in ROM but not in RAM*/
     {
         code = .; _code = .; __code = .; realmode_stack = .;
         *(.text)

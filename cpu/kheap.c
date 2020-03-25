@@ -7,7 +7,7 @@
 
 // end is defined in the linker script.
 //extern uint32_t end;
-//uint32_t placement_address = (uint32_t)&end + 0x1000;  // adding 1 page for the stack.
+//uint32_t placement_address = (uint32_t)&end + 0x2000;  // adding 1 page for the stack.
 
 uint32_t placement_address = (uint32_t)0x100000;  // Must cover area including the video area
 

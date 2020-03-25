@@ -1,3 +1,10 @@
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
+
+#include <stdbool.h>
+
 void init_A20(void);
-void init_keyboard();
+bool init_keyboard();
 void reboot();
+
+#endif

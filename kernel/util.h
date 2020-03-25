@@ -7,6 +7,10 @@
 
 #include "printf.h"
 
+#define static_assert(expr, msg) _Static_assert(expr, msg)
+#define static_assert_sizeof(type, size) \
+    static_assert(sizeof(type) == size, "sizeof(" #type ") is not equal to " #size)
+
 void panic(const char *message, const char *file, int line);
 #define PANIC(msg) panic(msg, __FILE__, __LINE__);
 
