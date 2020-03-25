@@ -6,12 +6,6 @@
 #include "../kernel/kernel.h"
 
 
-
-#define KEYBOARD_DATA_REGISTER 0x60
-#define KEYBOARD_CONTROL_REGISTER 0x64
-#define TEST_COMMAND 0xAA
-
-
 #define REG_DATA 0x60
 #define REG_CMD 0x64
 #define REG_STATUS 0x64
@@ -139,7 +133,7 @@ const char sc_ascii[] = { '?', '?', '!', '@', '#', '$', '%', '^',
 
 static void keyboard_callback(registers_t regs) {
     /* The PIC leaves us the scancode in port 0x60 */
-    unsigned char scancode = port_byte_in(KEYBOARD_DATA_REGISTER);
+    unsigned char scancode = port_byte_in(REG_DATA);
     bool is_rel_key = false;
     bool is_press_key = false;
     const char * ascii_table = sc_ascii;
@@ -206,7 +200,7 @@ cleanup:
 }
 
 static void wait_keyboard(void) {
-    unsigned char c = port_byte_in(KEYBOARD_CONTROL_REGISTER);
+    unsigned char c = port_byte_in(REG_CMD);
     while (c & 0x2) {
         kprint("Keyboard not ready\n");
         char ac[4];
@@ -220,13 +214,13 @@ static void wait_keyboard(void) {
 void init_A20(void) {
 
     wait_keyboard();
-    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xAD);
+    port_byte_out(REG_CMD, 0xAD);
     wait_keyboard();
-    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xD0);
+    port_byte_out(REG_CMD, 0xD0);
     io_wait();
 
 
-    unsigned char d = port_byte_in(KEYBOARD_DATA_REGISTER);
+    unsigned char d = port_byte_in(REG_DATA);
     char ad[8];
     hex_to_ascii(d, ad);
     kprint("output port status before: ");
@@ -234,12 +228,12 @@ void init_A20(void) {
     kprint("\n");
 
     wait_keyboard();
-    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xD1);
+    port_byte_out(REG_CMD, 0xD1);
     wait_keyboard();
-    port_byte_out(KEYBOARD_DATA_REGISTER, d | 2);
+    port_byte_out(REG_DATA, d | 2);
 
     wait_keyboard();
-    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xAE);
+    port_byte_out(REG_CMD, 0xAE);
 
 }
 
@@ -274,7 +268,7 @@ static bool i8042_self_test(void)
 
 void reboot(void) {
     wait_keyboard();
-    port_byte_out(KEYBOARD_CONTROL_REGISTER, 0xFE);
+    port_byte_out(REG_CMD, 0xFE);
 }
 
 static void disable_devices(void)
@@ -390,11 +384,18 @@ static bool reset_devices(void)
 }
 
 static bool set_keyboard_scancode(void) {
-    bool ret = send_port(PORT1, 0xF0);
-    if (!ret)
-        return ret;
-    ret = send_port(PORT1, 0x01);
-    return ret;
+    if (!send_port(PORT1, 0xF0))
+        return false;
+    if (!send_port(PORT1, 0x01))
+        return false;
+
+    io_wait();
+    int status = port_byte_in(REG_DATA);
+    printf("STATUS is %d\n", status);
+    if (status != 0xFA) {
+        return false;
+    }
+    return true;
 }
 
 // Init sequence as described in osdev
