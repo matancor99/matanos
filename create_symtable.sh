@@ -23,4 +23,8 @@ printf "sym.bin size is %d\n" $myfilesize1
 myfilesize2=$(wc -c ./str.bin | awk '{print $1}')
 printf "str.bin size is %d\n" $myfilesize2
 sum=$((myfilesize2 + myfilesize1))
-printf "sector num %d\n" $((sum / 512 + 1))
+sector_num=$((sum / 512 + 1))
+printf "sector num %d\n" $sector_num
+
+var="extra_sector_num = $sector_num;"
+sed -i "1s/.*/$var/" ./link.ld

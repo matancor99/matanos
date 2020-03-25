@@ -26,7 +26,11 @@ os-image.bin: kernel.bin
 kernel.bin:  ${OBJ}
 	ld -o $@ -Tlink.ld $^ --oformat binary -m elf_i386
 	ld -o kernel.elf -Tlink.ld $^ -m elf_i386
+	# Calling the script that will create the symtable and dump it to binary. Also updating the
+	# ld script, thus making us need to relink.
 	./create_symtable.sh
+	rm $@
+	ld -o $@ -Tlink.ld $^ --oformat binary -m elf_i386
 
 # Used for debugging purposes
 kernel.elf: ${OBJ}
