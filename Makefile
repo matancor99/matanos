@@ -1,7 +1,7 @@
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)
 HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
 # Nice syntax for file extension replacement
-OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o boot/kernel_entry.o boot/bootsect.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = gcc-7
@@ -9,7 +9,7 @@ GDB = gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g -mgeneral-regs-only -mno-red-zone -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables
 
-all: run
+all: clean run
 
 # First rule is run by default
 os-image.bin: kernel.bin
@@ -23,11 +23,11 @@ os-image.bin: kernel.bin
 #	objcopy -O binary --only-section=.boot kernel.bin boot.bin
 #	cat boot.bin text.bin > os-image.bin
 
-kernel.bin: boot/bootsect.o boot/kernel_entry.o  ${OBJ}
+kernel.bin:  ${OBJ}
 	ld -o $@ -Tlink.ld $^ --oformat binary -m elf_i386
 
 # Used for debugging purposes
-kernel.elf: boot/kernel_entry.o boot/bootsect.o ${OBJ}
+kernel.elf: ${OBJ}
 	ld -o $@ -Tlink.ld $^ -m elf_i386
 
 run: os-image.bin
@@ -46,8 +46,6 @@ debug: os-image.bin kernel.elf
 %.o: %.asm
 	nasm $< -f elf -o $@
 
-%.bin: %.asm
-	nasm $< -f bin -o $@
 
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf

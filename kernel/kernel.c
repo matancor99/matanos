@@ -77,8 +77,8 @@ void main() {
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
     initialise_paging();
     printf("Successful page table init\n");
-    int *ptr = (int*)0xA0000000;
-    int do_page_fault = *ptr;
+//    int *ptr = (int*)0xA0000000;
+//    int do_page_fault = *ptr;
 
 }
 

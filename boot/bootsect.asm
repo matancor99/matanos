@@ -1,10 +1,11 @@
 ; Identical to lesson 13's boot sector, but the %included files have new paths
 SECTION .boot_text
 
+[extern realmode_stack]
 [bits 16]
 genesis:
     mov [BOOT_DRIVE], dl ; Remember that the BIOS sets us the boot drive in 'dl' on boot
-    mov bp, 0x9000 ; arbitrary stack location for real mode
+    mov bp, realmode_stack ; arbitrary stack location for real mode
     mov sp, bp
 
     mov bx, MSG_REAL_MODE 

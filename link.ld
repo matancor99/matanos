@@ -4,16 +4,17 @@
 /*            tutorials: http://www.osdever.net/bkerndev/index.php. */
 
 ENTRY(_start)
+STARTUP(boot/kernel_entry.o)
 SECTIONS
 {
-    .boot 0x7c00 : AT(0x7c00)
+    .boot 0x7c00 :         /*for the boot section the lma = vma*/
     {
        *(.boot_text)
     }
 
-    .text 0xa000 : AT ( ADDR (.boot) + SIZEOF (.boot) )
+    .text 0x8000 : AT ( ADDR (.boot) + SIZEOF (.boot) )   /* leave a place for a small stack at 0x8000 - 0x7e00*/
     {
-        code = .; _code = .; __code = .;
+        code = .; _code = .; __code = .; realmode_stack = .;
         *(.text)
         . = ALIGN(4096);
     }
