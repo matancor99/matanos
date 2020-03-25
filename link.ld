@@ -32,6 +32,6 @@ SECTIONS
         *(.bss)
         . = ALIGN(4096);
     }
-    . = . + 0x1000; /* 4kB of stack memory */
     end = .; _end = .; __end = .;
+    sector_num = (end - _code) / 512;
 }

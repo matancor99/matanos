@@ -9,6 +9,7 @@
 extern int is_A20_on();
 extern uint32_t end;
 extern uint32_t code;
+extern uint32_t sector_num;
 
 void A20_sanity_checks(){
     // Handle A20
@@ -73,6 +74,7 @@ void main() {
     init_keyboard();
     printf("The end of the kernel is at %08x\n", (uint32_t)&end);
     printf("The text of the kernel is at %08x\n", (uint32_t)&code);
+    printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
     initialise_paging();
     printf("Successful page table init\n");
     int *ptr = (int*)0xA0000000;

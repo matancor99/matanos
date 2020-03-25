@@ -12,7 +12,7 @@ CFLAGS = -g -mgeneral-regs-only -mno-red-zone -fomit-frame-pointer -fno-exceptio
 all: run
 
 # First rule is run by default
-os-image.bin: boot/bootsect.bin kernel.bin
+os-image.bin: kernel.bin
 	cat kernel.bin > os-image.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
