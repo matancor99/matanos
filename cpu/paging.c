@@ -141,7 +141,6 @@ void initialise_paging()
 
     // Now, enable paging!
     switch_page_directory(kernel_directory);
-    printf("Finished paging init\n");
 }
 
 void switch_page_directory(page_directory_t *dir)

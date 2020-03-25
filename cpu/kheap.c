@@ -7,9 +7,9 @@
 
 // end is defined in the linker script.
 //extern uint32_t end;
-//uint32_t placement_address = (uint32_t)&end;
+//uint32_t placement_address = (uint32_t)&end + 0x2000;  // adding 2 pages one for the stack and another for safety
 
-uint32_t placement_address = (uint32_t)0x100000;
+uint32_t placement_address = (uint32_t)0x100000;  // Must cover area including the video area
 
 uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
 {
