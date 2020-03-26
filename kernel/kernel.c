@@ -5,14 +5,10 @@
 #include "../drivers/screen.h"
 #include "../drivers/ports.h"
 #include "printf.h"
+#include "symbols.h"
+#include "kernel.h"
 
 extern int is_A20_on();
-extern uint32_t end;
-extern uint32_t code;
-extern uint32_t data;
-extern uint32_t data_end;
-extern uint32_t bss;
-extern uint32_t sector_num;
 
 void A20_sanity_checks(){
     // Handle A20
@@ -36,103 +32,12 @@ void A20_sanity_checks(){
     }
 }
 
-void print_nice_hex(uint32_t * addr, int num) {
-    uint32_t * start = addr;
-    printf("Printing memory area starting at 0x%08x\n", start);
-    uint32_t * real_start = start;
-    for (int i=0; i < num/4; i++) {
-        printf("memory at:0x%04x ", start);
-        for (int j=0; j<4; j++) {
-            if (i*4 + j >= num) {
-                return;
-            }
-            printf("0x%08x ", *start);
-//            if (*start == 0x00007c00 || *start == 0x007c0000) {
-//                printf("\n Found Love at addr 0x%08x started at 0x%08x\n", start, real_start);
-//                return;
-//            }
-            start += 1;
-        }
-        printf("\n");
-    }
-}
-
-struct symbol_table_header {
-    uint32_t symbol_table_size;
-    uint32_t str_table_size;
-};
-
-
-typedef uint16_t Elf32_Half;	// Unsigned half int
-typedef uint32_t Elf32_Off;	// Unsigned offset
-typedef uint32_t Elf32_Addr;	// Unsigned address
-typedef uint32_t Elf32_Word;	// Unsigned int
-typedef int32_t  Elf32_Sword;	// Signed int
-
-typedef struct {
-    Elf32_Word		st_name;
-    Elf32_Addr		st_value;
-    Elf32_Word		st_size;
-    uint8_t			st_info;
-    uint8_t			st_other;
-    Elf32_Half		st_shndx;
-} Elf32_Sym;
-
-void print_symbol_table(Elf32_Sym * symbol_table, char * str_table,  uint32_t start, uint32_t end) {
-    int i = start;
-    char * symbol_name = NULL;
-    Elf32_Sym symbol = {0};
-    for (i = start; i < end; i++) {
-        symbol = symbol_table[i];
-        symbol_name = str_table + symbol.st_name;
-        printf("Symbol info: name: %s, addr: 0x%08x\n", symbol_name, symbol.st_value);
-    }
-}
-
-typedef void (*my_func)();
 
 
 int sum_of_numbers(int a, int b) {
     printf("c = %d\n", a+b);
 }
 
-bool find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sym_num, char * symname, uint32_t param1, uint32_t param2, uint32_t param3) {
-    int i = 0;
-    bool ret = false;
-    char * symbol_name = NULL;
-    Elf32_Sym symbol = {0};
-    for (i = 0; i < sym_num; i++) {
-        symbol = symbol_table[i];
-        symbol_name = str_table + symbol.st_name;
-        if (strcmp(symbol_name, symname) == 0) {
-            my_func func = (my_func)symbol.st_value;
-            if (func != 0) {
-                func(param1, param2, param3);
-                ret = true;
-            }
-            else {
-                printf("Null function\n");
-            }
-            break;
-        }
-    }
-    if (ret == false) {
-        printf("Symbol not found\n");
-    }
-    return ret;
-}
-
-void parse_symbol_table() {
-    struct symbol_table_header * header = (struct symbol_table_header *)&data_end;
-    Elf32_Sym * symbol_table = (char *)header + sizeof(struct symbol_table_header);
-    char * str_table = (char *)header + sizeof(struct symbol_table_header) + header->symbol_table_size;
-    uint32_t symnum = header->symbol_table_size / sizeof(Elf32_Sym);
-    //print symbol
-    print_symbol_table(symbol_table, str_table, 0x10, 0x20);
-    //find and run symbol
-    char * format = "LALALA %d %d\n";
-    find_symbol_and_run(symbol_table, str_table, symnum, "printf", (uint32_t)format, 3, 4);
-}
 
 #define MAX_COMMAND_SIZE (256)
 enum stage {
