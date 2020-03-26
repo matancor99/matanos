@@ -9,6 +9,9 @@
 extern int is_A20_on();
 extern uint32_t end;
 extern uint32_t code;
+extern uint32_t data;
+extern uint32_t data_end;
+extern uint32_t bss;
 extern uint32_t sector_num;
 
 void A20_sanity_checks(){
@@ -62,6 +65,27 @@ void user_input(char *input) {
     }
 }
 
+void print_nice_hex(uint32_t * addr, int num) {
+    uint32_t * start = addr;
+    printf("Printing memory area starting at 0x%08x\n", start);
+    uint32_t * real_start = start;
+    for (int i=0; i < num/4; i++) {
+        printf("memory at:0x%04x ", start);
+        for (int j=0; j<4; j++) {
+            if (i*4 + j >= num) {
+                return;
+            }
+            printf("0x%08x ", *start);
+//            if (*start == 0x00007c00 || *start == 0x007c0000) {
+//                printf("\n Found Love at addr 0x%08x started at 0x%08x\n", start, real_start);
+//                return;
+//            }
+            start += 1;
+        }
+        printf("\n");
+    }
+}
+
 void main() {
     A20_sanity_checks();
     //Initializing all the processor interrupt related structures
@@ -75,6 +99,8 @@ void main() {
     printf("The end of the kernel is at %08x\n", (uint32_t)&end);
     printf("The text of the kernel is at %08x\n", (uint32_t)&code);
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
+    uint32_t * symbols = (uint32_t)&data_end;
+    print_nice_hex(symbols, 0x100);
     initialise_paging();
     printf("Successful page table init\n");
 //    int *ptr = (int*)0xA0000000;
