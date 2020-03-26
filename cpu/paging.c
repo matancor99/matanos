@@ -12,7 +12,8 @@ page_directory_t *kernel_directory=0;
 // The current page directory;
 page_directory_t *current_directory=0;
 
-// A bitset of frames - used or free.
+// A bitset of frames - used or free - This is a global bit table to set the pages state after allocation.
+// Using this logic makes all logic for frame allocation very simply in terms of finding the first index of a free frame.
 uint32_t *frames;
 uint32_t nframes;
 
@@ -83,7 +84,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
         uint32_t idx = first_frame();
         if (idx == (uint32_t)-1)
         {
-            // PANIC! no free frames!!
+            PANIC("No free frames\n");
         }
         set_frame(idx*0x1000);
         page->present = 1;
@@ -115,11 +116,12 @@ void initialise_paging()
     uint32_t mem_end_page = 0x1000000;
     
     nframes = mem_end_page / 0x1000;
-    frames = (uint32_t*)kmalloc(INDEX_FROM_BIT(nframes));
-    memset(frames, 0, INDEX_FROM_BIT(nframes));
+    frames = (uint32_t*)kmalloc(nframes / 8); //TODO might be buggy because we adjust the placement_address only by nframes / 32 - we might need extra factor 4 because we do not deal with pointer on kheap.c
+    memset(frames, 0, nframes / 8);
     
     // Let's make a page directory.
     kernel_directory = (page_directory_t*)kmalloc_a(sizeof(page_directory_t));
+    memset(kernel_directory, 0, sizeof(page_directory_t));
     current_directory = kernel_directory;
 
     // We need to identity map (phys addr = virt addr) from
@@ -133,7 +135,8 @@ void initialise_paging()
     while (i < placement_address)
     {
         // Kernel code is readable but not writeable from userspace.
-        alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
+        page_t *cur_page_table_entry = get_page(i, 1, kernel_directory);
+        alloc_frame( cur_page_table_entry, 1, 1);
         i += 0x1000;
     }
     // Before we enable paging, we must register our page fault handler.
@@ -167,7 +170,7 @@ page_t *get_page(uint32_t address, int make, page_directory_t *dir)
     {
         uint32_t tmp;
         dir->tables[table_idx] = (page_table_t*)kmalloc_ap(sizeof(page_table_t), &tmp);
-        dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, US.
+        dir->tablesPhysical[table_idx] = tmp | 0x3; // PRESENT, RW, KERNEL_MODE.
         return &dir->tables[table_idx]->pages[address%1024];
     }
     else

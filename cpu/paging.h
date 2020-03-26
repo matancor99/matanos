@@ -15,7 +15,7 @@ typedef struct page
     uint32_t accessed   : 1;   // Has the page been accessed since last refresh?
     uint32_t dirty      : 1;   // Has the page been written to since last refresh?
     uint32_t unused     : 7;   // Amalgamation of unused and reserved bits
-    uint32_t frame      : 20;  // Frame address (shifted right 12 bits)
+    uint32_t frame      : 20;  // Frame address (shifted right 12 bits) - We actually put here the page index.
 } page_t;
 
 typedef struct page_table
