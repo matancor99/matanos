@@ -104,3 +104,8 @@ void panic(const char *message, const char *file, int line)
     // Halt by going into an infinite loop.
     for(;;);
 }
+
+
+int sum_of_numbers(int a, int b) {
+    printf("c = %d\n", a+b);
+}

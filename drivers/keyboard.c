@@ -3,7 +3,7 @@
 #include "../cpu/isr.h"
 #include "screen.h"
 #include "../kernel/util.h"
-#include "../kernel/kernel.h"
+#include "../kernel/shell.h"
 
 
 #define REG_DATA 0x60
