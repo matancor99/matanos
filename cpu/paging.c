@@ -135,8 +135,8 @@ void initialise_paging()
     while (i < placement_address)
     {
         // Kernel code is readable but not writeable from userspace.
-        page_t *cur_page_table_entry = get_page(i, 1, kernel_directory);
-        alloc_frame( cur_page_table_entry, 1, 1);
+        page_t *cur_page_table_entry = get_page_ptr_in_page_table(i, 1, kernel_directory);
+        alloc_frame(cur_page_table_entry, 1, 1);
         i += 0x1000;
     }
     // Before we enable paging, we must register our page fault handler.
@@ -156,7 +156,7 @@ void switch_page_directory(page_directory_t *dir)
     asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 
-page_t *get_page(uint32_t address, int make, page_directory_t *dir)
+page_t *get_page_ptr_in_page_table(uint32_t address, int make, page_directory_t *dir)
 {
     // Turn the address into an index.
     address /= 0x1000;

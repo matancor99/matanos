@@ -60,7 +60,7 @@ void switch_page_directory(page_directory_t *new);
    If make == 1, if the page-table in which this page should
    reside isn't created, create it!
 **/
-page_t *get_page(uint32_t address, int make, page_directory_t *dir);
+page_t *get_page_ptr_in_page_table(uint32_t address, int make, page_directory_t *dir);
 
 /**
    Handler for page faults.
