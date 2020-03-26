@@ -13,7 +13,7 @@ all: clean run
 
 # First rule is run by default
 os-image.bin: kernel.bin
-	cat kernel.bin sym.bin str.bin > os-image.bin
+	cat kernel.bin formatle.bin sym.bin str.bin > os-image.bin
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case

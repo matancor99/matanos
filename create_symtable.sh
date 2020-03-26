@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 IN_F=./kernel.elf
 OUT_F_SYM=./sym.bin
 OUT_F_STR=./str.bin
@@ -18,11 +19,12 @@ readelf -t kernel.elf |
   bash
 
 myfilesize1=$(wc -c ./sym.bin | awk '{print $1}')
-printf "sym.bin size is %d\n" $myfilesize1
+printf "%08x" $myfilesize1 | xxd -r -p  > format.bin
 
 myfilesize2=$(wc -c ./str.bin | awk '{print $1}')
-printf "str.bin size is %d\n" $myfilesize2
-sum=$((myfilesize2 + myfilesize1))
+printf "%08x" $myfilesize2 | xxd -r -p >> format.bin
+xxd -e -g4 format.bin | xxd -r > formatle.bin
+sum=$((myfilesize2 + myfilesize1 + 8))
 sector_num=$((sum / 512 + 1))
 printf "sector num %d\n" $sector_num
 

@@ -100,7 +100,7 @@ void main() {
     printf("The text of the kernel is at %08x\n", (uint32_t)&code);
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
     uint32_t * symbols = (uint32_t)&data_end;
-    print_nice_hex(symbols, 0x100);
+    print_nice_hex(symbols, 0x10);
     initialise_paging();
     printf("Successful page table init\n");
 //    int *ptr = (int*)0xA0000000;
