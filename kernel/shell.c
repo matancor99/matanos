@@ -89,26 +89,36 @@ static void parse_command_and_run(char * input) {
                     i++;
                 }
                 j = 0;
-                while (input[i] != ',' && j < MAX_COMMAND_SIZE) {
+                while (input[i] != ',' && input[i] != ')' && j < MAX_COMMAND_SIZE) {
                     param1[j] = input[i];
                     i++;
                     j++;
                 }
                 i++;
-                stage = PARAM2;
+                if (input[i] != ')') {
+                    stage = PARAM2;
+                }
+                else {
+                    stage = END;
+                }
                 break;
             case PARAM2:
                 while (input[i] == ' ') {
                     i++;
                 }
                 j = 0;
-                while (input[i] != ',' && j < MAX_COMMAND_SIZE) {
+                while (input[i] != ',' && input[i] != ')' &&  j < MAX_COMMAND_SIZE) {
                     param2[j] = input[i];
                     i++;
                     j++;
                 }
                 i++;
-                stage = PARAM3;
+                if (input[i] != ')') {
+                    stage = PARAM3;
+                }
+                else {
+                    stage = END;
+                }
                 break;
             case PARAM3:
                 while (input[i] == ' ') {
@@ -130,8 +140,8 @@ static void parse_command_and_run(char * input) {
     param1_val = check_param(param1);
     param2_val = check_param(param2);
     param3_val = check_param(param3);
-    printf("Command %s, Param1 %s, Param2 %s, Param3 %s\n", command, param1, param2, param3);
-    printf("Command %s, Param1 %s, Param2 %d, Param3 %d\n", command, param1_val, param2_val, param3_val);
+//    printf("Command %s, Param1 %s, Param2 %s, Param3 %s\n", command, param1, param2, param3);
+//    printf("Command %s, Param1 %s, Param2 %d, Param3 %d\n", command, param1_val, param2_val, param3_val);
     find_symbol_and_run(symbol_table, str_table, symnum, command, param1_val, param2_val, param3_val);
 
 }
