@@ -39,8 +39,15 @@ static uint32_t check_param(char * param) {
         i++;
     }
     if (param[i] == '"' ) {
+        //Remove ""
         is_str = true;
-        ret_val = (uint32_t)param;
+        char * new_param = param + 1;
+        i++;
+        while (new_param[i] != '"') {
+            i++;
+        }
+        new_param[i] = '\0';
+        ret_val = (uint32_t)new_param;
     }
     if(!is_str) {
         ret_val = skip_atoi(param);
@@ -63,7 +70,6 @@ static void parse_command_and_run(char * input) {
     uint32_t symnum = header->symbol_table_size / sizeof(Elf32_Sym);
 
     while (input[i] != '\0' && stage != END) {
-        printf("At stage %d\n", stage);
         switch (stage) {
             case COMMAND:
                 while (input[i] == ' ') {
@@ -124,8 +130,8 @@ static void parse_command_and_run(char * input) {
     param1_val = check_param(param1);
     param2_val = check_param(param2);
     param3_val = check_param(param3);
-//    printf("Command %s, Param1 %s, Param2 %s, Param3 %s\n", command, param1, param2, param3);
-//    printf("Command %s, Param1 %s, Param2 %d, Param3 %d\n", command, param1_val, param2_val, param3_val);
+    printf("Command %s, Param1 %s, Param2 %s, Param3 %s\n", command, param1, param2, param3);
+    printf("Command %s, Param1 %s, Param2 %d, Param3 %d\n", command, param1_val, param2_val, param3_val);
     find_symbol_and_run(symbol_table, str_table, symnum, command, param1_val, param2_val, param3_val);
 
 }

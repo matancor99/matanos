@@ -43,15 +43,8 @@ void main() {
     init_timer(50);
     // Keyboard interrupt
     init_keyboard();
-    printf("The end of the kernel is at %08x\n", (uint32_t)&end);
-    printf("The text of the kernel is at %08x\n", (uint32_t)&code);
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
-    parse_symbol_table();
     initialise_paging();
-    printf("Successful page table init\n");
-//    int *ptr = (int*)0xA0000000;
-//    int do_page_fault = *ptr;
-
 }
 
 void _start() {

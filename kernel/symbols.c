@@ -30,14 +30,8 @@ bool find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sy
                 func(param1, param2, param3);
                 ret = true;
             }
-            else {
-                printf("Null function\n");
-            }
             break;
         }
-    }
-    if (ret == false) {
-        printf("Symbol not found\n");
     }
     return ret;
 }

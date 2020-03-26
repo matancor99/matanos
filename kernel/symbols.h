@@ -27,5 +27,6 @@ typedef struct {
 
 void parse_symbol_table();
 bool find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sym_num, char * symname, uint32_t param1, uint32_t param2, uint32_t param3);
+void print_symbol_table(Elf32_Sym * symbol_table, char * str_table,  uint32_t start, uint32_t end);
 
 #endif
