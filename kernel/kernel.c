@@ -86,6 +86,35 @@ void print_nice_hex(uint32_t * addr, int num) {
     }
 }
 
+struct symbol_table_header {
+    uint32_t symbol_table_size;
+    uint32_t str_table_size;
+};
+
+
+typedef uint16_t Elf32_Half;	// Unsigned half int
+typedef uint32_t Elf32_Off;	// Unsigned offset
+typedef uint32_t Elf32_Addr;	// Unsigned address
+typedef uint32_t Elf32_Word;	// Unsigned int
+typedef int32_t  Elf32_Sword;	// Signed int
+
+typedef struct {
+    Elf32_Word		st_name;
+    Elf32_Addr		st_value;
+    Elf32_Word		st_size;
+    uint8_t			st_info;
+    uint8_t			st_other;
+    Elf32_Half		st_shndx;
+} Elf32_Sym;
+
+void parse_symbol_table() {
+    struct symbol_table_header * header = (struct symbol_table_header *)&data_end;
+    uint32_t * symbol_table = (char *)header + sizeof(struct symbol_table_header);
+    uint32_t * str_table = (char *)header + sizeof(struct symbol_table_header) + header->symbol_table_size;
+    print_nice_hex(symbol_table, 0x10);
+    print_nice_hex(str_table, 0x10);
+}
+
 void main() {
     A20_sanity_checks();
     //Initializing all the processor interrupt related structures
@@ -99,8 +128,7 @@ void main() {
     printf("The end of the kernel is at %08x\n", (uint32_t)&end);
     printf("The text of the kernel is at %08x\n", (uint32_t)&code);
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
-    uint32_t * symbols = (uint32_t)&data_end;
-    print_nice_hex(symbols, 0x10);
+    parse_symbol_table();
     initialise_paging();
     printf("Successful page table init\n");
 //    int *ptr = (int*)0xA0000000;
