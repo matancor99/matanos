@@ -107,12 +107,43 @@ typedef struct {
     Elf32_Half		st_shndx;
 } Elf32_Sym;
 
+void print_symbol_table(Elf32_Sym * symbol_table, char * str_table,  uint32_t start, uint32_t end) {
+    int i = start;
+    char * symbol_name = NULL;
+    Elf32_Sym symbol = {0};
+    for (i = start; i < end; i++) {
+        symbol = symbol_table[i];
+        symbol_name = str_table + symbol.st_name;
+        printf("Symbol info: name: %s, addr: 0x%08x\n", symbol_name, symbol.st_value);
+    }
+}
+
+typedef int (*my_func)(const char *, ...);
+
+void find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sym_num, const char * symname) {
+    int i = 0;
+    char * symbol_name = NULL;
+    Elf32_Sym symbol = {0};
+    for (i = 0; i < sym_num; i++) {
+        symbol = symbol_table[i];
+        symbol_name = str_table + symbol.st_name;
+        if (strcmp(symbol_name, symname) == 0) {
+            my_func func = (my_func)symbol.st_value;
+            func("TEST TEST TEST\n");
+
+        }
+    }
+}
+
 void parse_symbol_table() {
     struct symbol_table_header * header = (struct symbol_table_header *)&data_end;
-    uint32_t * symbol_table = (char *)header + sizeof(struct symbol_table_header);
-    uint32_t * str_table = (char *)header + sizeof(struct symbol_table_header) + header->symbol_table_size;
-    print_nice_hex(symbol_table, 0x10);
-    print_nice_hex(str_table, 0x10);
+    Elf32_Sym * symbol_table = (char *)header + sizeof(struct symbol_table_header);
+    char * str_table = (char *)header + sizeof(struct symbol_table_header) + header->symbol_table_size;
+    uint32_t symnum = header->symbol_table_size / sizeof(Elf32_Sym);
+    //print symbol
+    print_symbol_table(symbol_table, str_table, 0x10, 0x20);
+    //find and run symbol
+    find_symbol_and_run(symbol_table, str_table, symnum, "printf");
 }
 
 void main() {
