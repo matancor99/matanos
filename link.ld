@@ -1,4 +1,4 @@
-extra_sector_num = 14;
+extra_sector_num = 15;
 
 ENTRY(_start)
 STARTUP(boot/kernel_entry.o)

@@ -2,13 +2,14 @@
 #include "../cpu/timer.h"
 #include "../cpu/paging.h"
 #include "../cpu/kheap.h"
+#include "../cpu/task.h"
 #include "../drivers/keyboard.h"
 #include "../drivers/screen.h"
 #include "../drivers/ports.h"
 #include "printf.h"
 #include "symbols.h"
 #include "kernel.h"
-
+extern uint32_t next_pid;
 extern int is_A20_on();
 
 void A20_sanity_checks(){
@@ -35,27 +36,34 @@ void A20_sanity_checks(){
 
 
 void main() {
+
     A20_sanity_checks();
     //Initializing all the processor interrupt related structures
     isr_install();
-    IRQ_set_mask(CLOCK_INTERRUPT_LINE);
+//    IRQ_set_mask(CLOCK_INTERRUPT_LINE);
 //    IRQ_set_mask(KEYBOARD_INTERRUPT_LINE);
     // Timer interrupt at 50HZ
     init_timer(50);
     // Keyboard interrupt
     init_keyboard();
-    printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
 
-    uint32_t a = kmalloc(8);
+//    printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
+//    printf("The data_end of the kernel is 0x%08x\n", (uint32_t)&data_end);
+//    printf("The bss of the kernel is 0x%08x\n", (uint32_t)&bss);
+//    printf("The end of the kernel is 0x%08x\n", (uint32_t)&end);
+
     initialise_paging();
-    uint32_t b = kmalloc(8);
-    uint32_t c = kmalloc(8);
-    printf("a: 0x%08x, b: 0x%08x, c: 0x%08x \n", a, b, c);
-    kfree(c);
-    kfree(b);
-    uint32_t d = kmalloc(12);
-    printf("d: 0x%08x,\n", d);
 
+
+    // Start multitasking.
+    initialise_tasking();
+
+    // Create a new process in a new address space which is a clone of this.
+    int ret = fork();
+
+    printf("fork() returned %d, and getpid() returned %d", ret, getpid());
+    printf("\n============================================================================\n");
+    for(;;);
 }
 
 void _start() {

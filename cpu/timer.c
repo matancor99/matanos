@@ -1,7 +1,9 @@
 #include "timer.h"
 #include "../drivers/screen.h"
 #include "../kernel/util.h"
+#include "../kernel/printf.h"
 #include "../drivers/ports.h"
+#include "../cpu/task.h"
 #include "isr.h"
 
 #define TIMER_COMMAND_PORT 0x43
@@ -11,12 +13,8 @@ unsigned int tick = 0;
 
 static void timer_callback(registers_t regs) {
     tick++;
-    kprint("Tick: ");
-    
-    char tick_ascii[256];
-    int_to_ascii(tick, tick_ascii);
-    kprint(tick_ascii);
-    kprint("\n");
+    switch_task();
+
 }
 
 void init_timer(unsigned int freq) {

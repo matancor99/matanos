@@ -22,7 +22,9 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
         if (phys != 0)
         {
             page_t *page = get_page_ptr_in_page_table((uint32_t)addr, 0, kernel_directory);
-            *phys = page->frame*0x1000 + (uint32_t)addr&0xFFF;
+            *phys = (page->frame)*0x1000 + (((uint32_t)addr)&0xFFF);
+//            *(uint32_t *)(0x12bc0) = page->frame*0x1000 + (uint32_t)addr&0xFFF;
+//            printf("phys calc: 0x%08x, addr: 0x%08x, *phys: 0x%08x, The address of phys 0x%08x\n", page->frame*0x1000 + (uint32_t)addr&0xFFF , addr, *phys, *(uint32_t *)(0x12bc0));
         }
         return (uint32_t)addr;
     }
