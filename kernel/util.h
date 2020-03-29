@@ -14,6 +14,9 @@
 void panic(const char *message, const char *file, int line);
 #define PANIC(msg) panic(msg, __FILE__, __LINE__);
 
+void panic_assert(const char *file, int line, const char *desc);
+#define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
+
 void memcpy(char *source, char *dest, int nbytes);
 void memset(unsigned char *dest, unsigned char val, unsigned long len);
 void int_to_ascii(int n, char str[]);

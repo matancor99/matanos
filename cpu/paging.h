@@ -66,5 +66,6 @@ page_t *get_page_ptr_in_page_table(uint32_t address, int make, page_directory_t 
    Handler for page faults.
 **/
 void page_fault(registers_t regs);
-
+void alloc_frame(page_t *page, int is_kernel, int is_writeable);
+void free_frame(page_t *page);
 #endif

@@ -106,6 +106,16 @@ void panic(const char *message, const char *file, int line)
 }
 
 
+void panic_assert(const char *file, int line, const char *desc)
+{
+    // We encountered a massive problem and have to stop.
+    asm volatile("cli"); // Disable interrupts.
+
+    printf("Assertion Failed - %s at %s : %d\n", desc, file, line );
+    // Halt by going into an infinite loop.
+    for(;;);
+}
+
 int sum_of_numbers(int a, int b) {
     printf("c = %d\n", a+b);
 }

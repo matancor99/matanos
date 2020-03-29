@@ -1,6 +1,7 @@
 #include "../cpu/isr.h"
 #include "../cpu/timer.h"
 #include "../cpu/paging.h"
+#include "../cpu/kheap.h"
 #include "../drivers/keyboard.h"
 #include "../drivers/screen.h"
 #include "../drivers/ports.h"
@@ -44,7 +45,17 @@ void main() {
     // Keyboard interrupt
     init_keyboard();
     printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
+
+    uint32_t a = kmalloc(8);
     initialise_paging();
+    uint32_t b = kmalloc(8);
+    uint32_t c = kmalloc(8);
+    printf("a: 0x%08x, b: 0x%08x, c: 0x%08x \n", a, b, c);
+    kfree(c);
+    kfree(b);
+    uint32_t d = kmalloc(12);
+    printf("d: 0x%08x,\n", d);
+
 }
 
 void _start() {
