@@ -20,7 +20,6 @@ volatile task_t *ready_queue;
 extern page_directory_t *kernel_directory;
 extern page_directory_t *current_directory;
 extern void alloc_frame(page_t*,int,int);
-uint32_t initial_esp;
 extern uint32_t read_eip();
 
 // The next available process ID.
@@ -28,8 +27,6 @@ uint32_t next_pid = 1;
 
 void initialise_tasking()
 {
-    initial_esp = (uint32_t)&end + KERNEL_STACK_SIZE;
-
     // Rather important stuff happening, no interrupts please!
     asm volatile("cli");
 
@@ -55,6 +52,7 @@ void initialise_tasking()
 void move_stack(void *new_stack_start, uint32_t size)
 {
   uint32_t i;
+  uint32_t initial_esp = (uint32_t)&end + KERNEL_STACK_SIZE;
   // Allocate some space for the new stack.
   for( i = (uint32_t)new_stack_start;
        i >= ((uint32_t)new_stack_start-size);
