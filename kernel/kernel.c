@@ -57,6 +57,7 @@ void general_fault(registers_t regs)
 // For some reason i cant have process both in user node and in kernel mode + in user mode irq's not working.
 void do_tasking_test() {
     int ret = fork();
+    printf("passed fork ret %d\n", ret);
     int do_nothing_iterations = 1000000;
     int print_iterations = 3;
     for (int i=0; i<print_iterations; i++) {

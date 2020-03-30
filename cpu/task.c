@@ -29,10 +29,15 @@ uint32_t next_pid = 1;
 void initialise_tasking()
 {
     initial_esp = (uint32_t)&end + KERNEL_STACK_SIZE;
+
     // Rather important stuff happening, no interrupts please!
     asm volatile("cli");
 
-    // Relocate the stack so we know where it is.
+    // Relocate the stack so we know where it is. The moving of the stuck is not as important
+    // As allocating the table as if it is not in the kernel directory (notice that we are adding the
+    // Table to the current directory.
+    // The importance is that when we make a clone of the table we will not refer when accessing the stack to
+    // The same directory (assentially be calling clone_table over this table in clone_directory.
     move_stack((void*)0xE0000000, KERNEL_STACK_SIZE);
 
     // Initialise the first task (kernel task)

@@ -229,6 +229,7 @@ void page_fault(registers_t regs)
     if (reserved) {printf("reserved ");}
     printf(") at 0x%08x", faulting_address);
     printf("\n");
+    printf("Fault At address 0x%08x\n", regs.eip);
     PANIC("Page fault");
 }
 
