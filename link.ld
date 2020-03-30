@@ -1,4 +1,4 @@
-extra_sector_num = 15;
+extra_sector_num = 16;
 
 ENTRY(_start)
 STARTUP(boot/kernel_entry.o)
@@ -36,5 +36,5 @@ SECTIONS
         . = ALIGN(4096);
     }
     end = .; _end = .; __end = .;
-    sector_num = (data_end - _code) / 512 + 1 + extra_sector_num;
+    sector_num = (data_end - _code) / 512 + 1;
 }

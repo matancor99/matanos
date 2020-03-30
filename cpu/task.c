@@ -6,6 +6,7 @@
 #include "task.h"
 #include "paging.h"
 #include "kheap.h"
+#include "isr.h"
 #include "../kernel/kernel.h"
 #include "../kernel/util.h"
 
@@ -41,7 +42,7 @@ void initialise_tasking()
     current_task->eip = 0;
     current_task->page_directory = current_directory;
     current_task->next = 0;
-
+    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     // Reenable interrupts.
     asm volatile("sti");
 }
@@ -140,6 +141,9 @@ void switch_task()
 
     // Make sure the memory manager knows we've changed page directory.
     current_directory = current_task->page_directory;
+
+    // Change our kernel stack over.
+    set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
     // Here we:
     // * Stop interrupts so we don't get interrupted.
     // * Temporarily puts the new EIP location in ECX.
@@ -180,6 +184,7 @@ int fork()
     new_task->esp = new_task->ebp = 0;
     new_task->eip = 0;
     new_task->page_directory = directory;
+    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
 
     // Add it to the end of the ready queue.
@@ -216,4 +221,33 @@ int fork()
 int getpid()
 {
     return current_task->id;
+}
+
+
+void switch_to_user_mode()
+{
+    // Set up our kernel stack.
+    set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+
+    // Set up a stack structure for switching to user mode.
+    asm volatile("  \
+      cli; \
+      mov $0x23, %ax; \
+      mov %ax, %ds; \
+      mov %ax, %es; \
+      mov %ax, %fs; \
+      mov %ax, %gs; \
+                    \
+       \
+      mov %esp, %eax; \
+      pushl $0x23; \
+      pushl %esp; \
+      pushf; \
+      pushl $0x1B; \
+      push $1f; \
+      iret; \
+    1: \
+      add $0x4, %esp\
+      ");
+    // Im not sure why but i was missing 4 bytes for the esp to return to main in the end of the inline assembly
 }

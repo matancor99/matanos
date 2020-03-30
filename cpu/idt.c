@@ -9,6 +9,14 @@ void set_idt_gate(int n, unsigned int handler) {
     idt[n].high_offset = high_16(handler);
 }
 
+void set_idt_gate_user(int n, unsigned int handler) {
+    idt[n].low_offset = low_16(handler);
+    idt[n].sel = KERNEL_CS;
+    idt[n].always0 = 0;
+    idt[n].flags = 0xEE;  //Had to set the interrupts flags as if they are callable from user mode
+    idt[n].high_offset = high_16(handler);
+}
+
 void set_idt() {
     idt_reg.base = (unsigned int) &idt;
     idt_reg.limit = IDT_ENTRIES * sizeof(idt_gate_t) - 1;

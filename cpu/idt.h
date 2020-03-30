@@ -31,6 +31,7 @@ idt_register_t idt_reg;
 
 
 /* Functions implemented in idt.c */
+void set_idt_gate_user(int n, unsigned int handler);
 void set_idt_gate(int n, unsigned int handler);
 void set_idt();
 

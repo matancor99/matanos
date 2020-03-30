@@ -125,6 +125,8 @@ global irq13
 global irq14
 global irq15
 
+global isr128
+
 ; 0: Divide By Zero Exception
 isr0:
     cli
@@ -440,3 +442,9 @@ irq15:
 	push byte 47
 	jmp irq_common_stub
 
+; 31: Reserved
+isr128:
+    cli
+    push byte 0
+    push byte 128
+    jmp isr_common_stub

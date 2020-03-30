@@ -150,13 +150,13 @@ void initialise_paging()
     while (i < placement_address+0x1000)
     {
         // Kernel code is readable but not writeable from userspace.
-        alloc_frame( get_page_ptr_in_page_table(i, 1, kernel_directory), 1, 1);
+        alloc_frame( get_page_ptr_in_page_table(i, 1, kernel_directory), 0, 0);
         i += 0x1000;
     }
 
     // Now allocate those pages we mapped earlier.
     for (i = KHEAP_START; i < KHEAP_START+KHEAP_INITIAL_SIZE; i += 0x1000)
-        alloc_frame( get_page_ptr_in_page_table(i, 1, kernel_directory), 1, 1);
+        alloc_frame( get_page_ptr_in_page_table(i, 1, kernel_directory), 0, 0);
 
     // Before we enable paging, we must register our page fault handler.
     register_interrupt_handler(14, page_fault);
@@ -197,7 +197,7 @@ page_t *get_page_ptr_in_page_table(uint32_t address, int make, page_directory_t 
     {
         uint32_t tmp;
         dir->tables[table_idx] = (page_table_t*)kmalloc_ap(sizeof(page_table_t), &tmp);
-        dir->tablesPhysical[table_idx] = tmp | 0x3; // PRESENT, RW, KERNEL_MODE.
+        dir->tablesPhysical[table_idx] = tmp | 0x7; // PRESENT, RW, USER_MODE.
         return &dir->tables[table_idx]->pages[address%1024];
     }
     else
@@ -247,7 +247,7 @@ static page_table_t *clone_table(page_table_t *src, uint32_t *physAddr)
         if (src->pages[i].frame)
         {
             // Get a new frame.
-            alloc_frame(&table->pages[i], 1, 1);
+            alloc_frame(&table->pages[i], 0, 1);
             // Clone the flags from source to destination.
             if (src->pages[i].present) table->pages[i].present = 1;
             if (src->pages[i].rw) table->pages[i].rw = 1;
@@ -293,7 +293,7 @@ page_directory_t *clone_directory(page_directory_t *src)
             // Copy the table.
             uint32_t phys;
             dir->tables[i] = clone_table(src->tables[i], &phys);
-            dir->tablesPhysical[i] = phys | 0x03;
+            dir->tablesPhysical[i] = phys | 0x07;
         }
     }
     return dir;
