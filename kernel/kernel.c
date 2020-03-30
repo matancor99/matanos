@@ -35,12 +35,36 @@ void A20_sanity_checks(){
     }
 }
 
+
+void do_user_mode() {
+
+    initialise_syscalls();
+
+    switch_to_user_mode();
+
+    syscall_print_string("Hello, user world!\n");
+}
+
 void general_fault(registers_t regs)
 {
     printf("Error flag is 0x%08x \n", regs.err_code);
     PANIC("General fault");
 }
 
+
+// Somehow the time between the two processes is imbalanced idk why.
+void do_tasking_test() {
+    int ret = fork();
+    int do_nothing_iterations = 3;
+    int print_iterations = 1;
+    for (int i=0; i<print_iterations; i++) {
+        for (int j=0; j<do_nothing_iterations; j++) {
+            int x = 0;
+            x += 9999/9;
+        }
+        printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
+    }
+}
 
 void main() {
 
@@ -49,18 +73,14 @@ void main() {
     init_gdt();
 
     isr_install();
-    IRQ_set_mask(CLOCK_INTERRUPT_LINE);
+//    IRQ_set_mask(CLOCK_INTERRUPT_LINE);
 //    IRQ_set_mask(KEYBOARD_INTERRUPT_LINE);
     // Timer interrupt at 50HZ
     init_timer(50);
     // Keyboard interrupt
     init_keyboard();
 
-//    printf("The sector_num of the kernel is %d\n", (uint32_t)&sector_num);
-//    printf("The data_end of the kernel is 0x%08x\n", (uint32_t)&data_end);
-//    printf("The bss of the kernel is 0x%08x\n", (uint32_t)&bss);
-//    printf("The end of the kernel is 0x%08x\n", (uint32_t)&end);
-
+    register_interrupt_handler(13, general_fault);
     initialise_paging();
 
 
@@ -68,25 +88,9 @@ void main() {
     initialise_tasking();
 
     // Create a new process in a new address space which is a clone of this.
+//    do_tasking_test();
 
-    // Somehow the time between the two processes is imbalanced idk why.
-//    int ret = fork();
-//    for (int i=0; i<10; i++) {
-//        for (int j=0; j<100000000; j++) {
-//            int x = 0;
-//            x += 9999/9;
-//        }
-//        printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
-//    }
-
-    initialise_syscalls();
-
-    register_interrupt_handler(13, general_fault);
-
-    switch_to_user_mode();
-
-    syscall_print_string("Hello, user world!\n");
-//    printf("Hello, user world!\n");
+    do_user_mode();
 
     for(;;);
 }

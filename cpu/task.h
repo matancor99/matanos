@@ -9,7 +9,7 @@
 #include "../kernel/util.h"
 #include "paging.h"
 
-#define KERNEL_STACK_SIZE 2048       // Use a 2kb kernel stack.
+#define KERNEL_STACK_SIZE 0x1000       // kernel stack is defined as one page - set at kernel_entry.
 
 
 // This structure defines a 'task' - a process.
