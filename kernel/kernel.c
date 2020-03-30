@@ -42,7 +42,7 @@ void do_user_mode() {
 
     switch_to_user_mode();
 
-    syscall_print_string("Hello, user world!\n");
+    syscall_print_string("Running in user mode!\n");
 }
 
 void general_fault(registers_t regs)
@@ -53,17 +53,32 @@ void general_fault(registers_t regs)
 
 
 // Somehow the time between the two processes is imbalanced idk why.
+
+// For some reason i cant have process both in user node and in kernel mode + in user mode irq's not working.
 void do_tasking_test() {
     int ret = fork();
-    int do_nothing_iterations = 3;
-    int print_iterations = 1;
+    int do_nothing_iterations = 1000000;
+    int print_iterations = 3;
     for (int i=0; i<print_iterations; i++) {
-        for (int j=0; j<do_nothing_iterations; j++) {
-            int x = 0;
-            x += 9999/9;
+        if (ret >= 0) {
+            for (int j = 0; j < do_nothing_iterations; j++) {
+                int x = 0;
+                x += 9999 / 9;
+            }
         }
         printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
     }
+
+//    printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
+//    if (ret > 0) {   //parent
+//        for(;;) {
+//            printf("Running in kernel mode %d\n", a);
+//        }
+//    }
+//    else {   //child
+//        printf("Running in kernel mode %d\n", b);
+//        do_user_mode();
+//    }
 }
 
 void main() {
@@ -81,16 +96,16 @@ void main() {
     init_keyboard();
 
     register_interrupt_handler(13, general_fault);
-    initialise_paging();
 
+
+    initialise_paging();
 
     // Start multitasking.
     initialise_tasking();
 
     // Create a new process in a new address space which is a clone of this.
-//    do_tasking_test();
-
-    do_user_mode();
+    do_tasking_test();
+//    do_user_mode();
 
     for(;;);
 }

@@ -28,12 +28,12 @@ uint32_t next_pid = 1;
 
 void initialise_tasking()
 {
-    initial_esp = (uint32_t)&end + 0x1000;
+    initial_esp = (uint32_t)&end + KERNEL_STACK_SIZE;
     // Rather important stuff happening, no interrupts please!
     asm volatile("cli");
 
     // Relocate the stack so we know where it is.
-    move_stack((void*)0xE0000000, 0x1000);
+    move_stack((void*)0xE0000000, KERNEL_STACK_SIZE);
 
     // Initialise the first task (kernel task)
     current_task = ready_queue = (task_t*)kmalloc(sizeof(task_t));
@@ -120,7 +120,7 @@ void switch_task()
     // value in EAX further down at the end of this function. As C returns values in EAX,
     // it will look like the return value is this dummy value! (0x12345).
     eip = read_eip();
-
+//    printf("eip is 0x%08x, cur task id is %d, next task is 0x%08x\n", eip, current_task->id, current_task->next);
     // Have we just switched tasks?
     if (eip == 0x12345)
         return;
@@ -155,13 +155,11 @@ void switch_task()
     //   the next instruction.
     // * Jumps to the location in ECX (remember we put the new EIP in there).
     asm volatile("         \
-      cli;                 \
       mov %0, %%ecx;       \
       mov %1, %%esp;       \
       mov %2, %%ebp;       \
       mov %3, %%cr3;       \
       mov $0x12345, %%eax; \
-      sti;                 \
       jmp *%%ecx           "
                  : : "r"(eip), "r"(esp), "r"(ebp), "r"(current_directory->physicalAddr));
 }
@@ -212,7 +210,13 @@ int fork()
     }
     else
     {
-        // We are the child.
+        // We return from interrupt context - after the first time context switch happens to here.
+        // We dont really care that we fuck the registers here because it is the end of the function and we not longer use them so, pasten:
+        // This is very bad programming but when looking at the assembly flow from  uint32_t eip = read_eip(); to the return 0;
+        // no register value is used seriously, thus this method is safe but very not portable for any changes in the flow of fork.
+        // Moreover, we really dont care that we jump here from interrupt context because we recover the esp.
+        asm volatile("sti");
+        // We are the child.   No need to call sti because we get here through context switch.
         return 0;
     }
 
