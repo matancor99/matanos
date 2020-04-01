@@ -16,12 +16,12 @@ genesis:
     call switch_to_pm ; disable interrupts, load GDT,  etc. Finally jumps to 'BEGIN_PM'
     jmp $ ; Never executed
 
-%include "boot/print.asm"
-%include "boot/print_hex.asm"
-%include "boot/disk.asm"
-%include "boot/gdt.asm"
-%include "boot/32bit_print.asm"
-%include "boot/switch_pm.asm"
+%include "/root/CLionProjects/matanos/boot/print.asm"
+%include "/root/CLionProjects/matanos/boot/print_hex.asm"
+%include "/root/CLionProjects/matanos/boot/disk.asm"
+%include "/root/CLionProjects/matanos/boot/gdt.asm"
+%include "/root/CLionProjects/matanos/boot/32bit_print.asm"
+%include "/root/CLionProjects/matanos/boot/switch_pm.asm"
 
 [extern _code]
 [extern sector_num]
