@@ -1,4 +1,4 @@
-extra_sector_num = 16;
+extra_sector_num = 17;
 
 ENTRY(_start)
 /* STARTUP(/root/CLionProjects/matanos/cmake-build-debug/CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.o) */

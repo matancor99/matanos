@@ -6,5 +6,6 @@
 
 
 void init_timer(unsigned int freq);
+void sleep(uint32_t epoches);
 
 #endif

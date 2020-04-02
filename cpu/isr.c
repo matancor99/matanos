@@ -277,7 +277,6 @@ char *exception_messages[] = {
 
 void isr_handler(registers_t regs) {
     uint8_t int_no = regs.int_no & 0xFF;
-    printf("Received interrupt number : %d\n", int_no);
     //Return to the code after having a divition by zero exception
     if(int_no == 0) {
         regs.eip += 2;

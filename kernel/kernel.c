@@ -57,29 +57,29 @@ void general_fault(registers_t regs)
 // For some reason i cant have process both in user node and in kernel mode + in user mode irq's not working.
 void do_tasking_test() {
     int ret = fork();
-    printf("passed fork ret %d\n", ret);
-    int do_nothing_iterations = 1000000;
-    int print_iterations = 3;
-    for (int i=0; i<print_iterations; i++) {
-        if (ret >= 0) {
-            for (int j = 0; j < do_nothing_iterations; j++) {
-                int x = 0;
-                x += 9999 / 9;
-            }
-        }
-        printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
-    }
-
-//    printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
-//    if (ret > 0) {   //parent
-//        for(;;) {
-//            printf("Running in kernel mode %d\n", a);
+//    printf("passed fork ret %d\n", ret);
+//    int do_nothing_iterations = 1000000;
+//    int print_iterations = 3;
+//    for (int i=0; i<print_iterations; i++) {
+//        if (ret >= 0) {
+//            for (int j = 0; j < do_nothing_iterations; j++) {
+//                int x = 0;
+//                x += 9999 / 9;
+//            }
 //        }
+//        printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
 //    }
-//    else {   //child
-//        printf("Running in kernel mode %d\n", b);
-//        do_user_mode();
-//    }
+
+    printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
+    if (ret > 0) {   //parent
+        for(;;) {
+            sleep(50);
+            printf("Running in kernel mode!\n");
+        }
+    }
+    else {   //child
+        do_user_mode();
+    }
 }
 
 void main() {
@@ -105,8 +105,8 @@ void main() {
     initialise_tasking();
 
     // Create a new process in a new address space which is a clone of this.
-//    do_tasking_test();
-    do_user_mode();
+    do_tasking_test();
+//    do_user_mode();
 
     for(;;);
 }
