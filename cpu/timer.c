@@ -14,6 +14,7 @@ unsigned int tick = 0;
 
 extern task_t *current_task;
 extern task_t *ready_queue;
+extern task_t *sleep_queue;
 extern uint32_t next_pid;
 uint32_t end_of_sleep = 0;
 uint32_t sleeper_task = 0;
@@ -28,13 +29,31 @@ static void timer_callback(registers_t regs) {
         if (next_pid == 1) {
             return;
         }
-
         // Reset the sleep task
-        if (tick > end_of_sleep) {
-            for (task_t *tmp_task = (task_t*)ready_queue; tmp_task->next; tmp_task = tmp_task->next){
-                if (tmp_task->id == sleeper_task) {
-                    tmp_task->should_run = true;
+        for (task_t *tmp_task = (task_t*)sleep_queue; tmp_task && (tmp_task == sleep_queue || tmp_task->next); tmp_task = tmp_task->next){
+            if (tick > tmp_task->end_of_sleep) {
+                tmp_task->end_of_sleep = 0;
+                //Remove from sleep queue
+                //If tmp_task starts the list
+                if (tmp_task == sleep_queue) {
+                    sleep_queue = tmp_task->next;
                 }
+                else {
+                    //Find the pointer in the list that points at current task
+                    task_t *tmp_task_iter = (task_t*)sleep_queue;
+                    while (tmp_task_iter->next != tmp_task) {
+                        tmp_task_iter = tmp_task_iter->next;
+                    }
+                    // Skip current task
+                    tmp_task_iter->next = tmp_task->next;
+                }
+
+                //Add to ready queue
+                task_t *tmp_task_iter = (task_t*)ready_queue;
+                while (tmp_task_iter->next)
+                    tmp_task_iter = tmp_task_iter->next;
+                tmp_task_iter->next = tmp_task;
+                tmp_task->next = NULL;
             }
         }
 
@@ -58,11 +77,19 @@ void init_timer(unsigned int freq) {
 
 
 void sleep(uint32_t epoches) {
-    if (current_task->should_run) {
-        end_of_sleep = tick + epoches;
-        sleeper_task = current_task->id;
-        current_task->should_run = false;
-        //TODO: This is very problematic call since it does not save all the registers
-        switch_task();
+    current_task->end_of_sleep = tick + epoches;
+    if(!sleep_queue) {
+        sleep_queue = current_task;
+        //current_task->next = NULL;
     }
+    else {
+        // Add it to the end of the ready queue.
+        task_t *tmp_task = sleep_queue;
+        while (tmp_task->next)
+            tmp_task = tmp_task->next;
+        tmp_task->next = current_task;
+    }
+
+    //TODO: This is very problematic call since it does not save all the registers
+    switch_task();
 }

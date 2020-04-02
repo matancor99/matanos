@@ -21,7 +21,7 @@ typedef struct task
     uint32_t eip;            // Instruction pointer.
     page_directory_t *page_directory; // Page directory.
     uint32_t kernel_stack;   // Kernel stack location.
-    bool should_run;
+    uint32_t end_of_sleep;
     struct task *next;     // The next task in a linked list.
 } task_t;
 

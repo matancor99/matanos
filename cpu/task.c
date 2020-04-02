@@ -12,9 +12,12 @@
 
 // The currently running task.
 volatile task_t *current_task;
+volatile task_t * tmp_current_task = NULL;
 
 // The start of the task linked list.
 volatile task_t *ready_queue;
+
+volatile task_t *sleep_queue = NULL;
 
 // Some externs are needed to access members in paging.c...
 extern page_directory_t *kernel_directory;
@@ -45,7 +48,7 @@ void initialise_tasking()
     current_task->page_directory = current_directory;
     current_task->next = 0;
     current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
-    current_task->should_run = true;
+    current_task->end_of_sleep = 0;
     // Reenable interrupts.
     asm volatile("sti");
 }
@@ -136,21 +139,31 @@ void switch_task()
     current_task->ebp = ebp;
     
     // Get the next task to run.
-    current_task = current_task->next;
+    tmp_current_task = current_task->next;
     // If we fell off the end of the linked list start again at the beginning.
-    if (!current_task) current_task = ready_queue;
-    while(!current_task->should_run) {
-        // Get the next task to run.
-        current_task = current_task->next;
-        // If we fell off the end of the linked list start again at the beginning.
-        if (!current_task) current_task = ready_queue;
+    if (!tmp_current_task) tmp_current_task = ready_queue;
 
-        // We need to track this loop to not get inf loop
-        if (task_counter >= next_pid) {
-            return;
+    // Remove current task from ready queue if is in sleep state
+    if (current_task->end_of_sleep) {
+        task_t *tmp_task = (task_t *) ready_queue;
+        //If current task starts the list
+        if (ready_queue == current_task) {
+            ready_queue = current_task->next;
         }
-        task_counter++;
+        else {
+            //Find the pointer in the list that points at current task
+            while (tmp_task->next != current_task) {
+                tmp_task = tmp_task->next;
+            }
+            // Skip current task
+            tmp_task->next = current_task->next;
+        }
+        //Reset the current task next pointer
+        current_task->next = NULL;
     }
+
+    current_task = tmp_current_task;
+
     eip = current_task->eip;
     esp = current_task->esp;
     ebp = current_task->ebp;
@@ -200,7 +213,7 @@ int fork()
     new_task->page_directory = directory;
     new_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
-    new_task->should_run = true;
+    new_task->end_of_sleep = 0;
 
     // Add it to the end of the ready queue.
     task_t *tmp_task = (task_t*)ready_queue;
