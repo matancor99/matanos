@@ -113,6 +113,11 @@ void switch_task()
     if (!current_task)
         return;
 
+    // If there is only one task - return
+    if (current_task == ready_queue && ready_queue->next == NULL) {
+        return;
+    }
+
     // Read esp, ebp now for saving later on.
     uint32_t esp, ebp, eip;
     asm volatile("mov %%esp, %0" : "=r"(esp));

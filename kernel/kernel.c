@@ -72,9 +72,18 @@ void do_tasking_test() {
 
     printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
     if (ret > 0) {   //parent
-        for(;;) {
-            sleep(50);
-            printf("Running in kernel mode!\n");
+        ret = fork();
+        if (ret > 0) {   //parent
+            for(;;) {
+                sleep(50);
+                printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
+            }
+        }
+        else {   //child
+            for(;;) {
+                sleep(10);
+                printf("fork() returned %d, and getpid() returned %d\n", ret, getpid());
+            }
         }
     }
     else {   //child

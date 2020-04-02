@@ -16,21 +16,16 @@ extern task_t *current_task;
 extern task_t *ready_queue;
 extern task_t *sleep_queue;
 extern uint32_t next_pid;
-uint32_t end_of_sleep = 0;
-uint32_t sleeper_task = 0;
-
 
 static void timer_callback(registers_t regs) {
 
-        task_t * next_task = NULL;
-        bool should_skip_task = false;
         tick++;
         // There is only one task
         if (next_pid == 1) {
             return;
         }
         // Reset the sleep task
-        for (task_t *tmp_task = (task_t*)sleep_queue; tmp_task && (tmp_task == sleep_queue || tmp_task->next); tmp_task = tmp_task->next){
+        for (task_t *tmp_task = (task_t*)sleep_queue; tmp_task; tmp_task = tmp_task->next){
             if (tick > tmp_task->end_of_sleep) {
                 tmp_task->end_of_sleep = 0;
                 //Remove from sleep queue
@@ -77,7 +72,15 @@ void init_timer(unsigned int freq) {
 
 
 void sleep(uint32_t epoches) {
+
+    //Sanity check - make sure there is more than one task in ready queue else return with error
+    if (current_task && current_task == ready_queue && ready_queue->next == NULL) {
+        printf("Cant sleep with only one process\n");
+        return;
+    }
+
     current_task->end_of_sleep = tick + epoches;
+    //If sleep queue is empty - create it
     if(!sleep_queue) {
         sleep_queue = current_task;
         //current_task->next = NULL;
