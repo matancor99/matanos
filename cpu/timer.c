@@ -5,6 +5,7 @@
 #include "ports.h"
 #include "task.h"
 #include "isr.h"
+#include <stdbool.h>
 
 #define TIMER_COMMAND_PORT 0x43
 #define TIMER_DATA_PORT 0x40
@@ -21,6 +22,7 @@ uint32_t sleeper_task = 0;
 static void timer_callback(registers_t regs) {
 
         task_t * next_task = NULL;
+        bool should_skip_task = false;
         tick++;
         // There is only one task
         if (next_pid == 1) {
@@ -29,25 +31,15 @@ static void timer_callback(registers_t regs) {
 
         // Reset the sleep task
         if (tick > end_of_sleep) {
-            sleeper_task = 0;
-        }
-
-        // Set the next_task to run
-        if (current_task->next == NULL) {
-            next_task = ready_queue;
-        }
-        else {
-            next_task = current_task->next;
+            for (task_t *tmp_task = (task_t*)ready_queue; tmp_task->next; tmp_task = tmp_task->next){
+                if (tmp_task->id == sleeper_task) {
+                    tmp_task->should_run = true;
+                }
+            }
         }
 
         // Switch task only if the next task isn't sleeping
-        if(sleeper_task && next_task && next_task->id == sleeper_task) {
-//            printf("Sleeping\n");
-        }
-        else {
-//            printf("Not Sleeping %d %d %d\n", sleeper_task, tick, end_of_sleep);
-            switch_task();
-        }
+        switch_task();
 }
 
 void init_timer(unsigned int freq) {
@@ -66,9 +58,10 @@ void init_timer(unsigned int freq) {
 
 
 void sleep(uint32_t epoches) {
-    if (!sleeper_task) {
+    if (current_task->should_run) {
         end_of_sleep = tick + epoches;
         sleeper_task = current_task->id;
+        current_task->should_run = false;
         //TODO: This is very problematic call since it does not save all the registers
         switch_task();
     }

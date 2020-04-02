@@ -45,6 +45,7 @@ void initialise_tasking()
     current_task->page_directory = current_directory;
     current_task->next = 0;
     current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
+    current_task->should_run = true;
     // Reenable interrupts.
     asm volatile("sti");
 }
@@ -105,6 +106,7 @@ void move_stack(void *new_stack_start, uint32_t size)
 void switch_task()
 {
     // If we haven't initialised tasking yet, just return.
+    int task_counter = 1;
     if (!current_task)
         return;
 
@@ -137,7 +139,18 @@ void switch_task()
     current_task = current_task->next;
     // If we fell off the end of the linked list start again at the beginning.
     if (!current_task) current_task = ready_queue;
+    while(!current_task->should_run) {
+        // Get the next task to run.
+        current_task = current_task->next;
+        // If we fell off the end of the linked list start again at the beginning.
+        if (!current_task) current_task = ready_queue;
 
+        // We need to track this loop to not get inf loop
+        if (task_counter >= next_pid) {
+            return;
+        }
+        task_counter++;
+    }
     eip = current_task->eip;
     esp = current_task->esp;
     ebp = current_task->ebp;
@@ -187,6 +200,7 @@ int fork()
     new_task->page_directory = directory;
     new_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
+    new_task->should_run = true;
 
     // Add it to the end of the ready queue.
     task_t *tmp_task = (task_t*)ready_queue;

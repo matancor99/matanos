@@ -8,6 +8,7 @@
 
 #include "util.h"
 #include "paging.h"
+#include <stdbool.h>
 
 #define KERNEL_STACK_SIZE 0x1000       // kernel stack is defined as one page - set at kernel_entry.
 
@@ -20,6 +21,7 @@ typedef struct task
     uint32_t eip;            // Instruction pointer.
     page_directory_t *page_directory; // Page directory.
     uint32_t kernel_stack;   // Kernel stack location.
+    bool should_run;
     struct task *next;     // The next task in a linked list.
 } task_t;
 
