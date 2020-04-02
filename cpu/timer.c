@@ -1,9 +1,9 @@
 #include "timer.h"
-#include "../drivers/screen.h"
-#include "../kernel/util.h"
-#include "../kernel/printf.h"
-#include "../drivers/ports.h"
-#include "../cpu/task.h"
+#include "screen.h"
+#include "util.h"
+#include "printf.h"
+#include "ports.h"
+#include "task.h"
 #include "isr.h"
 
 #define TIMER_COMMAND_PORT 0x43

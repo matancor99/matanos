@@ -4,8 +4,8 @@
 #include "paging.h"
 #include "kheap.h"
 #include "isr.h"
-#include "../kernel/printf.h"
-#include "../kernel/util.h"
+#include "printf.h"
+#include "util.h"
 
 extern void copy_page_physical(uint32_t , uint32_t);
 

@@ -7,7 +7,7 @@ OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o  cpu/gdt.o cpu/process.o boot/kernel_ent
 CC = gcc-7
 GDB = gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g -mgeneral-regs-only -mno-red-zone -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables
+CFLAGS = -g -mgeneral-regs-only -mno-red-zone -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables  -Iboot -Icpu -Idrivers -Ikernel
 
 all: clean run
 

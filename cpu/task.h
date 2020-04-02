@@ -6,7 +6,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "../kernel/util.h"
+#include "util.h"
 #include "paging.h"
 
 #define KERNEL_STACK_SIZE 0x1000       // kernel stack is defined as one page - set at kernel_entry.

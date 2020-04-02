@@ -4,8 +4,8 @@
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
-#include "../kernel/util.h"
-#include "../kernel/printf.h"
+#include "util.h"
+#include "printf.h"
 
 void initialise_syscalls();
 

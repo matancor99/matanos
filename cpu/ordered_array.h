@@ -6,7 +6,7 @@
 #define ORDERED_ARRAY_H
 
 #include <stdint.h>
-#include "../kernel/util.h"
+#include "util.h"
 /**
    This array is insertion sorted - it always remains in a sorted state (between calls).
    It can store anything that can be cast to a void* -- so a uint32_t, or any pointer.

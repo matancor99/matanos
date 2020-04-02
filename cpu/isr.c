@@ -1,8 +1,8 @@
 #include "isr.h"
 #include "idt.h"
-#include "../drivers/screen.h"
-#include "../kernel/util.h"
-#include "../drivers/ports.h"
+#include "screen.h"
+#include "util.h"
+#include "ports.h"
 #include <stdint.h>
 /* Can't do this with a loop because we need the address
  * of the function names */

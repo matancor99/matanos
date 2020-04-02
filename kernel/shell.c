@@ -3,7 +3,7 @@
 #include "kernel.h"
 #include "util.h"
 #include "shell.h"
-#include "../cpu/isr.h"
+#include "isr.h"
 
 #define MAX_COMMAND_SIZE (256)
 enum stage {

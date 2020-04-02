@@ -7,8 +7,8 @@
 #include "paging.h"
 #include "kheap.h"
 #include "isr.h"
-#include "../kernel/kernel.h"
-#include "../kernel/util.h"
+#include "kernel.h"
+#include "util.h"
 
 // The currently running task.
 volatile task_t *current_task;

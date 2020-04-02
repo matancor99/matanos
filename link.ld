@@ -1,7 +1,8 @@
-extra_sector_num = 17;
+extra_sector_num = 16;
 
 ENTRY(_start)
-STARTUP(/root/CLionProjects/matanos/cmake-build-debug/CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.o)
+/* STARTUP(/root/CLionProjects/matanos/cmake-build-debug/CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.o) */
+STARTUP(boot/kernel_entry.o)
 SECTIONS
 {
     .boot 0x7c00 :         /*for the boot section the lma = vma - both will start the binary*/

@@ -1,9 +1,9 @@
 #include "keyboard.h"
 #include "ports.h"
-#include "../cpu/isr.h"
+#include "isr.h"
 #include "screen.h"
-#include "../kernel/util.h"
-#include "../kernel/shell.h"
+#include "util.h"
+#include "shell.h"
 
 
 #define REG_DATA 0x60
