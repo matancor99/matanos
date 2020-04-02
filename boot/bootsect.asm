@@ -16,7 +16,7 @@ genesis:
     call switch_to_pm ; disable interrupts, load GDT,  etc. Finally jumps to 'BEGIN_PM'
     jmp $ ; Never executed
 
-%include "/root/CLionProjects/matanos/boot/print.asm"
+%include "/root/CLionProjects/matanos/boot/print.asm"   ; The abs path is for the cmake support
 %include "/root/CLionProjects/matanos/boot/print_hex.asm"
 %include "/root/CLionProjects/matanos/boot/disk.asm"
 %include "/root/CLionProjects/matanos/boot/gdt.asm"

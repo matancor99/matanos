@@ -6,7 +6,7 @@
 # I couldnt find any supported way to remove this flag so I simply created a dependand targed that removed this with sed.
 # 3. working with ld directly is also very shitty - look at set(CMAKE_C_LINK_EXECUTABLE ...)
 
-# ** TODO - need to change the STARTUP in link.ld before running
+# ** TODO Before running - need to change the STARTUP in link.ld before running
 
 
 cmake_minimum_required(VERSION 3.14)
