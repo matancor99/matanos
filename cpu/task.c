@@ -185,7 +185,7 @@ int fork()
     new_task->esp = new_task->ebp = 0;
     new_task->eip = 0;
     new_task->page_directory = directory;
-    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
+    new_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
 
     // Add it to the end of the ready queue.
@@ -237,6 +237,12 @@ void switch_to_user_mode()
     set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
 
     // Set up a stack structure for switching to user mode.
+    /* This logic:
+     * pop %eax;
+      or $0x200, %eax;
+      push %eax; \
+     * Meant to alter the eflags to enable interrupts, sti not working
+     * */
     asm volatile("  \
       cli; \
       mov $0x23, %ax; \
@@ -250,6 +256,9 @@ void switch_to_user_mode()
       pushl $0x23; \
       pushl %esp; \
       pushf; \
+      pop %eax;  \
+      or $0x200, %eax; \
+      push %eax; \
       pushl $0x1B; \
       push $1f; \
       iret; \

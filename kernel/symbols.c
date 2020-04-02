@@ -24,6 +24,7 @@ bool find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sy
     for (i = 0; i < sym_num; i++) {
         symbol = symbol_table[i];
         symbol_name = str_table + symbol.st_name;
+//        printf("symbol  %s\n", symbol_name);
         if (strcmp(symbol_name, symname) == 0) {
             my_func func = (my_func)symbol.st_value;
             if (func != 0) {
@@ -32,6 +33,9 @@ bool find_symbol_and_run(Elf32_Sym * symbol_table, char * str_table, uint32_t sy
             }
             break;
         }
+    }
+    if (!ret) {
+//        printf("symbol not found %s\n", symname);
     }
     return ret;
 }

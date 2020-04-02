@@ -105,8 +105,8 @@ void main() {
     initialise_tasking();
 
     // Create a new process in a new address space which is a clone of this.
-    do_tasking_test();
-//    do_user_mode();
+//    do_tasking_test();
+    do_user_mode();
 
     for(;;);
 }

@@ -4,6 +4,8 @@
 #include "util.h"
 #include "shell.h"
 #include "isr.h"
+#include "keyboard.h"
+#include "ports.h"
 
 #define MAX_COMMAND_SIZE (256)
 enum stage {
